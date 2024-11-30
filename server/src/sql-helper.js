@@ -1,20 +1,21 @@
 import sql from 'mssql'
 const config = {
-    "server": "DESKTOP-DPH71MT",
+    "server": process.env.SQL_SERVER,
     "authentication": {
         "type": "default",
         "options": {
-            "userName": "admin",
-            "password": "Shadommc613@",
+            "userName": process.env.SQL_USERNAME,
+            "password": process.env.SQL_PASSWORD,
         }
     },
     "options": {
-        "port": 1433,
-        "database": "QuanLyDonHang"
+        "port": parseInt(process.env.SQL_PORT),
+        "database": process.env.SQL_DATABASE
     },
     "trustServerCertificate": true,
 };
 export function query(query, callback) {
+    console.log(config);
     sql.connect(config, err => {
         if (err)
             callback(err, null);
