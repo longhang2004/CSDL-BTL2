@@ -1,25 +1,34 @@
 import sql from 'mssql'
-const config = {
-    "server": process.env.SQL_SERVER,
-    "authentication": {
-        "type": "default",
+
+export function getauth(body){
+    return {
+        username: body.username,
+        password: body.password,
+    }
+}
+export function query(query, auth, callback) {
+    const config = {
+        "server": process.env.SQL_SERVER,
+        "authentication": {
+            "type": "default",
+            "options": {
+                "userName": auth.username,
+                "password": auth.password,
+            }
+        },
         "options": {
-            "userName": process.env.SQL_USERNAME,
-            "password": process.env.SQL_PASSWORD,
-        }
-    },
-    "options": {
-        "port": parseInt(process.env.SQL_PORT),
-        "database": process.env.SQL_DATABASE
-    },
-    "trustServerCertificate": true,
-};
-export function query(query, callback) {
-    console.log(config);
+            "port": parseInt(process.env.SQL_PORT),
+            "database": process.env.SQL_DATABASE
+        },
+        "trustServerCertificate": true,
+    };
     sql.connect(config, err => {
         if (err)
             callback(err, null);
         else
-            sql.query(query, callback)
+            sql.query(query, (error, rows) =>{
+                sql.close();
+                callback(error, rows);
+            });
     })
 }
