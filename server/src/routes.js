@@ -37,6 +37,24 @@ export function login(request, response) {
     });
 }
 
+export function get_hang_san_xuat(request, response){
+    var auth = getauth(request.body)
+    var body = request.body;
+    var query_str = "SELECT * FROM HangSanXuat";
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.send({
+                success: true,
+                message: "Lấy dữ liệu thành công",
+                query: query_str,
+                data: rows.recordset
+            });
+    });
+}
+
 export function get_hang_hoa(request, response) {
     var auth = getauth(request.body)
 
