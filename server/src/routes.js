@@ -187,3 +187,21 @@ export function get_average_rating(request, response) {
             });
     });
 };
+
+export function create_danh_gia(request, response){
+    var auth = getauth(request.body)
+    var body = request.body;
+    var query_str = `INSERT INTO DanhGiaSanPham VALUES (${body.MaDonHang}, ${body.MaKhachHang}, ${body.MaHangHoa}, N'${body.NoiDung}', ${body.SoSao}, '${body.Anh_Video}');`;
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.send({
+                success: true,
+                message: "Thêm dữ liệu thành công",
+                query: query_str,
+                data: rows
+            });
+    });
+}
