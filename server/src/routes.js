@@ -1,20 +1,32 @@
 import { getauth, query } from './sql-helper.js';
 
+function deal_with_error(query_str, response, error){
+    if (error) {
+        if (error.code == "ELOGIN")
+            response.send({
+                success: false,
+                message: "Tài khoản không hợp lệ",
+            });
+        else if (error.code == "EREQUEST")
+            response.send({
+                success: false,
+                query : query_str,
+                message: "Input không hợp lệ : " + error.originalError.info.message,
+            });
+        else
+            response.send({
+                success: false,
+                query : query_str,
+                message: "Lỗi chưa xác định",
+                error: error
+            });
+    }
+}
 export function login(request, response) {
     var auth = getauth(request.body)
     query("select * from Admin", auth, (error, rows) => {
         if (error) {
-            if (error.code == "ELOGIN")
-                response.send({
-                    success: false,
-                    message: "Tài khoản không hợp lệ",
-                });
-            else
-                response.send({
-                    success: false,
-                    message: "Lỗi chưa xác định",
-                    error: error
-                });
+            deal_with_error(query_str, response, error);
         }
         else {
             response.send({
@@ -90,12 +102,7 @@ export function get_hang_hoa(request, response) {
 
     query(query_str, auth, (error, rows) => {
         if (error) {
-            response.send({
-                success: false,
-                message: "Unknow error",
-                query: query_str,
-                error: error
-            });
+            deal_with_error(query_str, response, error);
         }
         else
             response.send({
@@ -113,12 +120,7 @@ export function create_hang_hoa(request, response) {
     var query_str = `INSERT INTO HangHoa VALUES (${body.MaHangHoa}, ${body.MaHangSanXuat}, '${body.Ten}', ${body.GiaMuaVao}, ${body.GiaBanNiemYet}, ${body.TonKho}, '${body.MoTa}', ${body.SoSaoDanhGia});`;
     query(query_str, auth, (error, rows) => {
         if (error) {
-            response.send({
-                success: false,
-                message: "Unknow error",
-                query: query_str,
-                error: error
-            });
+            deal_with_error(query_str, response, error);
         }
         else
             response.send({
@@ -133,15 +135,10 @@ export function create_hang_hoa(request, response) {
 export function update_hang_hoa(request, response) {
     var auth = getauth(request.body)
     var body = request.body;
-    var query_str = `UPDATE HangHoa SET MaHangSanXuat='${body.MaHangSanXuat}',Ten='${body.Ten}',GiaMuaVao='${body.GiaMuaVao}',GiaBanNiemYet='${body.GiaBanNiemYet}',TonKho='${body.TonKho}',MoTa='${body.MoTa}',SoSaoDanhGia='${body.SoSaoDanhGia}' WHERE MaHangHoa = ${body.MaHangHoa}`;
+    var query_str = `UPDATE HangHoa SET MaHangSanXuat='${body.MaHangSanXuat}',Ten='${body.Ten}',GiaMuaVao='${body.GiaMuaVao}',GiaBanNiemYet='${body.GiaBanNiemYet}',TonKho='${body.TonKho}',MoTa=N'${body.MoTa}',SoSaoDanhGia='${body.SoSaoDanhGia}' WHERE MaHangHoa = ${body.MaHangHoa}`;
     query(query_str, auth, (error, rows) => {
         if (error) {
-            response.send({
-                success: false,
-                message: "Unknow error",
-                query: query_str,
-                error: error
-            });
+            deal_with_error(query_str, response, error);
         }
         else
             response.send({
@@ -159,12 +156,7 @@ export function delete_hang_hoa(request, response) {
     var query_str = `DELETE HangHoa WHERE MaHangHoa = ${body.MaHangHoa}`;
     query(query_str, auth, (error, rows) => {
         if (error) {
-            response.send({
-                success: false,
-                message: "Unknow error",
-                query: query_str,
-                error: error
-            });
+            deal_with_error(query_str, response, error);
         }
         else
             response.send({
@@ -176,6 +168,22 @@ export function delete_hang_hoa(request, response) {
     });
 };
 
-export function update_avarage_rating(request, response) {
+export function get_average_rating(request, response) {
     var auth = getauth(request.body)
+
+    const MaHangHoa = request.body.MaHangHoa;
+    const query_str = `UPDATE HangHoa SET SoSaoDanhGia=dbo.GetAverageRatingForProduct(HangHoa.MaHangHoa) WHERE MaHangHoa = ${MaHangHoa}; SELECT * FROM HangHoa WHERE MaHangHoa = ${MaHangHoa};`;
+
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.send({
+                success: true,
+                message: "Cập nhật dữ liệu thành công",
+                query: query_str,
+                data: rows.recordset
+            });
+    });
 };
