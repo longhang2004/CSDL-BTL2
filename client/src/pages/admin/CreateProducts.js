@@ -9,16 +9,12 @@ const CreatProduct = () => {
 
     // Base attributes that all products share
     const baseAttributes = [
-        { name: 'name', label: 'Tên sản phẩm', required: true },
-        { name: 'stock', label: 'Số lượng' },
-        { name: 'price', label: 'Giá tiền (đơn vị VNĐ)', required: true },
-        { name: 'saleDiscountRate', label: 'Khuyến mãi (%)', },
-        { name: 'origin', label: 'Xuất sứ' },
-        { name: 'manufacturer', label: 'Hãng sản xuất' },
-        { name: 'warrantyPeriod', label: 'Thời gian bảo hành' },
-        { name: 'warrantyPolicy', label: 'Chính sách bảo hành' },
-        { name: 'imageLink', label: 'Hình ảnh' }, 
-        { name: 'description', label: 'Mô tả' },
+        { name: 'Ten', label: 'Tên sản phẩm', required: true },
+        { name: 'TonKho', label: 'Số lượng' },
+        { name: 'GiaMuaVao', label: 'Giá tiền (đơn vị VNĐ)', required: true },
+        { name: 'GiaBanNiemYet', label: 'Giá tiền (đơn vị VNĐ)', required: true },
+        { name: 'HangSanXuat', label: 'Hãng sản xuất' },
+        { name: 'MoTa', label: 'Mô tả' },
     ];
 
     // Product-specific attributes (keeping your existing specificAttributes object)
@@ -105,14 +101,11 @@ const CreatProduct = () => {
             setIsSubmitting(true);
             // Format the data according to your API requirements
             const payload = {
-                productType,
-                productData: {
                     ...productData,
                     // Convert numeric fields
-                    price: Number(productData.price),
-                    stock: productData.stock ? Number(productData.stock) : 0,
-                    saleDiscountRate: productData.saleDiscountRate ? Number(productData.saleDiscountRate) : 0,
-                }
+                    GiaMuaVao: Number(productData.GiaMuaVao),
+                    GiaBanNiemYet: Number(productData.GiaBanNiemYet),
+                    TonKho: productData.TonKho ? Number(productData.TonKho) : 0,
             };
 
             const response = await apiAddProduct(payload);
@@ -155,7 +148,7 @@ const CreatProduct = () => {
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-6">
                 {/* Product Type Selection */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                     <label className="block text-sm font-semibold font-medium text-gray-700">
                         Loại sản phẩm
                     </label>
@@ -171,7 +164,7 @@ const CreatProduct = () => {
                             </option>
                         ))}
                     </select>
-                </div>
+                </div> */}
 
                 {/* Base Attributes */}
                 <div className="grid grid-cols-2 gap-6">
@@ -197,7 +190,7 @@ const CreatProduct = () => {
                 </div>
 
                 {/* Specific Attributes */}
-                {productType && (
+                {/* {productType && (
                     <div className="space-y-6">
                         <div className="border-t pt-6">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -225,7 +218,7 @@ const CreatProduct = () => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
 
                 <button
                     type="submit"

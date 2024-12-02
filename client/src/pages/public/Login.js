@@ -195,7 +195,7 @@ const Login = () => {
             fw
           />
 
-          <div className='flex flex-row items-center justify-between my-2 w-full text-sm'>
+          {/* <div className='flex flex-row items-center justify-between my-2 w-full text-sm'>
             {!isRegister && <span onClick={() => setIsForgotPassword(true)} className='text-blue-500 hover:underline cursor-pointer'>Quên mật khẩu?</span>}
             {!isRegister && <span 
               className='text-blue-500 hover:underline cursor-pointer' onClick={() => setIsRegister(true)}
@@ -205,7 +205,7 @@ const Login = () => {
               onClick={() => setIsRegister(false)}
               >Đăng nhập ngay</span>}
           </div>
-          <Link className='text-blue-500 hover:underline cursor-pointer text-sm flex flex-col items-center' to={`/${path.HOME}`}>Trở về trang chủ</Link>
+          <Link className='text-blue-500 hover:underline cursor-pointer text-sm flex flex-col items-center' to={`/${path.HOME}`}>Trở về trang chủ</Link> */}
         </div>
       </div>
     </div>
