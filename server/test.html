@@ -1,0 +1,19 @@
+<script>
+    function hsx_select_changed(){
+        if (document.getElementById("hsx_id").value == -1){
+            document.getElementById("create_new_hsx").style = "";
+        } else{
+            document.getElementById("create_new_hsx").style = "display: none;";
+        }
+    }
+</script>
+Chọn hãng 
+<select id="hsx_id" onchange="hsx_select_changed()">
+    <option value="-1">Tạo mới</option>
+    <option value="0">Apple</option>
+    <option value="1">Samsung</option>
+    <option value="2">Xiaomi</option>
+</select>
+<div id="create_new_hsx">
+    Tên hãng mới : <input id="hsx_name" type="text"> Địa chỉ mới : <input id="hsx_address" type="text"><br>
+</div>
