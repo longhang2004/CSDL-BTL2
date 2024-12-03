@@ -1,9 +1,9 @@
 import sql from 'mssql'
 
-export function getauth(body){
+export function getauth(data){
     return {
-        username: body.username,
-        password: body.password,
+        username: data.username,
+        password: data.password,
     }
 }
 export function query(query, auth, callback) {
