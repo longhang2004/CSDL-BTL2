@@ -13,7 +13,8 @@ const CreatProduct = () => {
         { name: 'TonKho', label: 'Số lượng' },
         { name: 'GiaMuaVao', label: 'Giá tiền (đơn vị VNĐ)', required: true },
         { name: 'GiaBanNiemYet', label: 'Giá tiền (đơn vị VNĐ)', required: true },
-        { name: 'HangSanXuat', label: 'Hãng sản xuất' },
+        { name: 'TenHangSanXuat', label: 'Hãng sản xuất' },
+        { name: 'DiaChi', label: 'Xuất xứ' },
         { name: 'MoTa', label: 'Mô tả' },
     ];
 

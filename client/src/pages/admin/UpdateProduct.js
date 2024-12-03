@@ -4,22 +4,20 @@ import Swal from 'sweetalert2';
 
 const UpdateProduct = ({ productId, setEditProduct }) => {
     const [loading, setLoading] = useState(false);
-    const [productType, setProductType] = useState('');
+    // const [productType, setProductType] = useState('');
     const [formData, setFormData] = useState({});
     
     // Base attributes that all products share
     const baseAttributes = [
-        { name: 'name', label: 'Tên sản phẩm', required: true },
-        { name: 'stock', label: 'Số lượng' },
-        { name: 'price', label: 'Giá tiền (đơn vị VNĐ)', required: true },
-        { name: 'saleDiscountRate', label: 'Khuyến mãi (%)', },
-        { name: 'origin', label: 'Xuất sứ' },
-        { name: 'manufacturer', label: 'Hãng sản xuất' },
-        { name: 'warrantyPeriod', label: 'Thời gian bảo hành' },
-        { name: 'warrantyPolicy', label: 'Chính sách bảo hành' },
-        { name: 'imageLink', label: 'Hình ảnh' }, 
-        { name: 'description', label: 'Mô tả' },
+        { name: 'Ten', label: 'Tên sản phẩm', required: true },
+        { name: 'TonKho', label: 'Số lượng' },
+        { name: 'GiaMuaVao', label: 'Giá tiền (đơn vị VNĐ)', required: true },
+        { name: 'GiaBanNiemYet', label: 'Giá tiền (đơn vị VNĐ)', required: true },
+        { name: 'TenHangSanXuat', label: 'Hãng sản xuất' },
+        { name: 'DiaChi', label: 'Xuất xứ' },
+        { name: 'MoTa', label: 'Mô tả' },
     ];
+
 
     // Product-specific attributes
     const specificAttributes = {
@@ -101,7 +99,6 @@ const UpdateProduct = ({ productId, setEditProduct }) => {
       
       if (response.success) {
           const product = response.productData;
-          setProductType(product.__t);
           setFormData(product);
       } else {
           Swal.fire({
@@ -137,13 +134,10 @@ const UpdateProduct = ({ productId, setEditProduct }) => {
           try {
             setLoading(true);
             const updateData = {
-                productId,
-                updateData: {
                     ...formData,
-                    price: Number(formData.price),
-                    stock: formData.stock ? Number(formData.stock) : 0,
-                    saleDiscountRate: formData.saleDiscountRate ? Number(formData.saleDiscountRate) : 0
-                }
+                    GiaMuaVao: Number(productData.GiaMuaVao),
+                    GiaBanNiemYet: Number(productData.GiaBanNiemYet),
+                    TonKho: productData.TonKho ? Number(productData.TonKho) : 0,
             };
 
             const response = await apiUpdateProduct(updateData);
@@ -210,7 +204,7 @@ const UpdateProduct = ({ productId, setEditProduct }) => {
                 </div>
 
                 {/* Specific Attributes */}
-                {productType && specificAttributes[productType] && (
+                {/* {productType && specificAttributes[productType] && (
                     <div className="space-y-6">
                         <div className="border-t pt-6">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -237,7 +231,7 @@ const UpdateProduct = ({ productId, setEditProduct }) => {
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
                 <div className='flex flex-row justify-center gap-10 pt-4'>
                   <button
                       type="submit"

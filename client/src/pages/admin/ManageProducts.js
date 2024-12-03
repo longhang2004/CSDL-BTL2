@@ -16,7 +16,8 @@ const ManageProduct = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [currentPage, sortField, sortOrder]);
+    // }, [currentPage, sortField, sortOrder]);
+    },[]);
 
     const handleEditProduct = (productId) => {
         setEditProduct(productId) // Store only the ID
@@ -126,13 +127,13 @@ const ManageProduct = () => {
                     <thead>
                         <tr className="bg-sky-800 text-white">
                             <th className="px-6 py-3 text-left">STT</th>
-                            <th className="px-6 py-3 text-left">Hình ảnh</th>
                             <th className="px-6 py-3 text-left">Tên sản phẩm</th>
-                            <th className="px-6 py-3 text-left">Loại</th>
-                            <th className="px-6 py-3 text-right">Giá</th>
+                            <th className="px-6 py-3 text-right">Giá mua vào</th>
+                            <th className="px-6 py-3 text-right">Giá bán niêm yết</th>
                             <th className="px-6 py-3 text-center">Tồn kho</th>
                             <th className="px-6 py-3 text-center">Đánh giá</th>
-                            <th className="px-6 py-3 text-center">Cập nhật</th>
+                            <th className="px-6 py-3 text-center">Hãng sản xuất</th>
+                            <th className="px-6 py-3 text-center">Xem chi tiết</th>
                             <th className="px-6 py-3 text-center">Thao tác</th>
                         </tr>
                     </thead>
@@ -153,17 +154,23 @@ const ManageProduct = () => {
                             products.map((product, index) => (
                                 <tr key={product._id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4">
-                                        {(currentPage - 1) * pageSize + index + 1}
+                                        {index + 1}
                                     </td>
-                                    <td className="px-6 py-4">
+                                    {/* <td className="px-6 py-4">
                                         <img
                                             src={product.imageLink || '/placeholder-image.jpg'}
                                             alt={product.name}
                                             className="w-12 h-12 object-cover rounded"
                                         />
-                                    </td>
+                                    </td> */}
                                     <td className="px-6 py-4 font-medium">{product.name}</td>
-                                    <td className="px-6 py-4 capitalize">{product.__t || 'product'}</td>
+                                    {/* <td className="px-6 py-4 capitalize">{product.__t || 'product'}</td> */}
+                                    <td className="px-6 py-4 text-right">
+                                        {new Intl.NumberFormat('vi-VN', { 
+                                            style: 'currency', 
+                                            currency: 'VND' 
+                                        }).format(product.price)}
+                                    </td>
                                     <td className="px-6 py-4 text-right">
                                         {new Intl.NumberFormat('vi-VN', { 
                                             style: 'currency', 
@@ -172,8 +179,17 @@ const ManageProduct = () => {
                                     </td>
                                     <td className="px-6 py-4 text-center">{product.stock}</td>
                                     <td className="px-6 py-4 text-center">{product.rating}</td>
-                                    <td className="px-6 py-4 text-center whitespace-nowrap">
+                                    {/* <td className="px-6 py-4 text-center whitespace-nowrap">
                                         {new Date(product.updatedAt).toLocaleDateString('vi-VN')}
+                                    </td> */}
+                                    <td className="px-6 py-4 text-center">{product.manufacturer}</td>
+                                    <td className="px-6 py-4 text-center">
+                                        <button
+                                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                                            onClick={() => {handleEditProduct(product._id)}}
+                                        >
+                                            Xem chi tiết
+                                        </button>
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="flex justify-center space-x-2">
@@ -199,7 +215,7 @@ const ManageProduct = () => {
             </div>
 
             {/* Pagination */}
-            <div className="mt-6 flex justify-center space-x-2">
+            {/* <div className="mt-6 flex justify-center space-x-2">
                 <button
                     className={`px-4 py-2 rounded transition-colors ${
                         currentPage === 1 
@@ -225,7 +241,7 @@ const ManageProduct = () => {
                 >
                     Trang sau
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };

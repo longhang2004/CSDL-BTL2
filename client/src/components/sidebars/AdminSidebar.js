@@ -3,7 +3,9 @@ import logo from 'assets/logoabc.png'
 import {adminSidebar} from 'utils/contants'
 import { NavLink, Link } from 'react-router-dom'
 import clsx from 'clsx'
+import { IoLogOut } from "react-icons/io5";
 import { FaChevronDown, FaChevronRight  } from "react-icons/fa";
+import Button from '../Button'
 
 const activedStyle = 'px-4 py-2 flex items-center gap-2 text-xl bg-gray-300 rounded-xl'
 const notActivedStyle = 'px-4 py-2 flex items-center gap-2 text-xl hover:bg-gray-100 rounded-xl'
@@ -22,6 +24,12 @@ const AdminSidebar = () => {
             </Link>
             <span className='text-bold'>Trang quản lý của admin</span>
         </div>
+        <button type="button" 
+        className={({ isActive }) => clsx(isActive && activedStyle, !isActive && notActivedStyle)}
+        onClick={ () => { dispatch(logout()) } } >
+            <span><IoLogOut className="mr-2 h-5 w-5 text-gray-500" /> </span>
+            <span>Đăng xuất</span>
+            </button>
         <div className='flex flex-col justify gap-6 pt-6'>
             {adminSidebar.map(el => (
                 <Fragment key={el.id}>

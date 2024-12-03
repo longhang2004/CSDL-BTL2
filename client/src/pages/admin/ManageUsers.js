@@ -167,7 +167,8 @@ const ManageUsers = () => {
                                         <div className="text-sm">{user.mobile}</div>
                                     </td>
                                     <td className="px-6 py-4 text-sm">
-                                        <select
+                                    <div className="text-sm">{user.LoaiNguoiDung}</div>
+                                        {/* <select
                                           value={user.role}
                                           onChange={(e) => handleRoleChange(user._id, e.target.value, user.role)}
                                           className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -178,7 +179,7 @@ const ManageUsers = () => {
                                         >
                                           <option value="user">Người dùng</option>
                                           <option value="admin">Quản trị viên</option>
-                                        </select>
+                                        </select> */}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {new Date(user.createdAt).toLocaleDateString('vi-VN')}
@@ -207,7 +208,7 @@ const ManageUsers = () => {
             </div>
 
             {/* Pagination */}
-            <div className="mt-6 flex justify-center space-x-2">
+            {/* <div className="mt-6 flex justify-center space-x-2">
                 <button
                     className={`px-4 py-2 rounded ${
                         currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
@@ -229,7 +230,7 @@ const ManageUsers = () => {
                 >
                     Trang sau
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };
