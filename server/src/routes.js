@@ -194,7 +194,94 @@ function delete_user(request, response) {
     });
 }
 
+function get_product_reviews(request, response) {
+    const maHangHoa = request.params.maHangHoa;
+    
+    const sqlQuery = `
+        SELECT 
+            nd.Ho + ' ' + nd.Ten as HoTen,
+            dgsp.SoSao,
+            dgsp.NoiDung,
+            dgsp.Anh_Video,
+            dgsp.MaDanhGia,
+            FORMAT(dh.ThoiGianDatHang, 'dd/MM/yyyy HH:mm') as ThoiGianDanhGia
+        FROM DanhGiaSanPham dgsp
+        JOIN KhachHang kh ON dgsp.MaKhachHang = kh.MaNguoiDung
+        JOIN NguoiDung nd ON kh.MaNguoiDung = nd.MaNguoiDung
+        JOIN DonHang dh ON dgsp.MaDonHang = dh.MaDonHang
+        WHERE dgsp.MaHangHoa = ${maHangHoa}
+        ORDER BY dh.ThoiGianDatHang DESC
+    `;
+
+    query(sqlQuery, (error, result) => {
+        if (error) {
+            response.status(500).json({
+                success: false,
+                message: "Lỗi khi lấy danh sách đánh giá",
+                error: error
+            });
+        } else {
+            response.json({
+                success: true,
+                data: result.recordset
+            });
+        }
+    });
+}
+
+function get_product_detail(request, response) {
+    const maHangHoa = request.params.maHangHoa;
+    
+    const sqlQuery = `
+        SELECT 
+            hh.MaHangHoa,
+            hh.Ten,
+            hh.GiaMuaVao,
+            hh.GiaBanNiemYet,
+            hh.TonKho,
+            hh.MoTa,
+            hh.SoSaoDanhGia,
+            hsx.MaHangSanXuat,
+            hsx.TenHangSanXuat,
+            hsx.DiaChi as DiaChiHangSanXuat,
+            dt.MaThongTin,
+            dt.ViXuLy,
+            dt.ManHinh,
+            dt.RAM_ROM,
+            dt.Camera,
+            dt.PinSac,
+            dt.ChuanKetNoi
+        FROM HangHoa hh
+        LEFT JOIN HangSanXuat hsx ON hh.MaHangSanXuat = hsx.MaHangSanXuat
+        LEFT JOIN DienThoai dt ON hh.MaHangHoa = dt.MaHangHoa
+        WHERE hh.MaHangHoa = ${maHangHoa}
+    `;
+
+    query(sqlQuery, (error, result) => {
+        if (error) {
+            response.status(500).json({
+                success: false,
+                message: "Lỗi khi lấy thông tin hàng hóa",
+                error: error
+            });
+        } else {
+            if (result.recordset.length > 0) {
+                response.json({
+                    success: true,
+                    data: result.recordset[0]
+                });
+            } else {
+                response.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy hàng hóa"
+                });
+            }
+        }
+    });
+}
+
 export {
     read_nguoi_dung, read_hang_hoa, get_average_rating, check_login,
-    create_user, read_user, update_user, delete_user
+    create_user, read_user, update_user, delete_user,
+    get_product_reviews, get_product_detail
 }
