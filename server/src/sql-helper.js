@@ -1,9 +1,9 @@
 import sql from 'mssql'
 
-export function getauth(data){
+export function getauth(data) {
     return {
-        username: data.username,
-        password: data.password,
+        username: "sa",
+        password: "ditconmemay",
     }
 }
 export function query(query, auth, callback) {
@@ -26,7 +26,7 @@ export function query(query, auth, callback) {
         if (err)
             callback(err, null);
         else
-            sql.query(query, (error, rows) =>{
+            sql.query(query, (error, rows) => {
                 sql.close();
                 callback(error, rows);
             });
