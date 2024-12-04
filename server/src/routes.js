@@ -315,7 +315,7 @@ export function get_danh_gia(request, response){
 }
 
 
-function create_user(request, response) {
+export function create_user(request, response) {
     var auth = getauth(request.headers)
     const { Ten, Ho, email, sdt, diaChi, LoaiNguoiDung, matkhau } = request.body;
 
@@ -366,7 +366,7 @@ export function read_user(request, response) {
     });
 }
 
-function update_user(request, response) {
+export function update_user(request, response) {
     var auth = getauth(request.headers)
     const { MaNguoiDung } = request.params;
     const { Ten, Ho, email, sdt, diaChi, LoaiNguoiDung, matkhau } = request.body;
@@ -395,7 +395,7 @@ function update_user(request, response) {
     });
 }
 
-function delete_user(request, response) {
+export function delete_user(request, response) {
     var auth = getauth(request.headers)
     const { MaNguoiDung } = request.params;
 
