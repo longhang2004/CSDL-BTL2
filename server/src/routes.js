@@ -448,3 +448,86 @@ export function delete_user(request, response) {
         }
     });
 }
+
+
+export function get_product_detail(request, response) {
+    var auth = getauth(request.headers);
+    const maHangHoa = request.params.maHangHoa;
+
+    // Query cơ bản lấy thông tin hàng hóa và hãng sản xuất
+    const query_str = `
+        -- Lấy thông tin cơ bản của hàng hóa và hãng sản xuất
+        SELECT 
+            hh.*,
+            hsx.TenHangSanXuat,
+            hsx.DiaChi as DiaChiHangSanXuat,
+            -- Lấy thông tin chi tiết dựa vào loại hàng hóa
+            CASE 
+                WHEN hh.LoaiHangHoa = N'DienThoai' THEN (
+                    SELECT TOP 1 * FROM DienThoai WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Laptop' THEN (
+                    SELECT TOP 1 * FROM Laptop WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Tablet' THEN (
+                    SELECT TOP 1 * FROM Tablet WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Smartwatch' THEN (
+                    SELECT TOP 1 * FROM Smartwatch WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+            END as ThongTinChiTiet,
+            -- Lấy đánh giá sản phẩm
+            (
+                SELECT 
+                    dg.MaDanhGia,
+                    dg.NoiDung,
+                    dg.SoSao,
+                    dg.Anh_Video,
+                    dg.MaKhachHang,
+                    nd.Ho + ' ' + nd.Ten as TenNguoiDung,
+                    kh.CapBac,
+                    dg.MaDonHang
+                FROM DanhGiaSanPham dg
+                JOIN NguoiDung nd ON dg.MaKhachHang = nd.MaNguoiDung
+                JOIN KhachHang kh ON dg.MaKhachHang = kh.MaNguoiDung
+                WHERE dg.MaHangHoa = hh.MaHangHoa
+                FOR JSON PATH
+            ) as DanhGia
+        FROM HangHoa hh
+        JOIN HangSanXuat hsx ON hh.MaHangSanXuat = hsx.MaHangSanXuat
+        WHERE hh.MaHangHoa = ${maHangHoa}
+    `;
+
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        } else {
+            if (rows.recordset.length > 0) {
+                const product = rows.recordset[0];
+                
+                // Parse JSON strings
+                try {
+                    if (product.ThongTinChiTiet) {
+                        product.ThongTinChiTiet = JSON.parse(product.ThongTinChiTiet);
+                    }
+                    if (product.DanhGia) {
+                        product.DanhGia = JSON.parse(product.DanhGia);
+                    }
+                } catch (e) {
+                    console.error("JSON parse error:", e);
+                }
+
+                response.json({
+                    success: true,
+                    message: "Lấy thông tin sản phẩm thành công",
+                    data: product
+                });
+            } else {
+                response.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy sản phẩm"
+                });
+            }
+        }
+    });
+}
