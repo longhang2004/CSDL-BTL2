@@ -449,7 +449,6 @@ export function delete_user(request, response) {
     });
 }
 
-
 export function get_product_detail(request, response) {
     var auth = getauth(request.headers);
     const maHangHoa = request.params.maHangHoa;
