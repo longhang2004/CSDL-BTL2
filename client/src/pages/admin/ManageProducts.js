@@ -12,6 +12,7 @@ const ManageProduct = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [sortField, setSortField] = useState('');
     const [sortOrder, setSortOrder] = useState('');
+    const [productType, setProductType] = useState('');
     const [editProduct, setEditProduct] = useState(null);
     const [viewProduct, setViewProduct] = useState(null);
 
@@ -93,7 +94,12 @@ const ManageProduct = () => {
     const handleFilter = async () => {
         if (isFiltering&&filterTerm) {
             setLoading(true);
-            const response = await apiFetchProductByFilter(filterTerm);
+            const response = await apiFetchProductByFilter({
+                ...filterTerm,
+                sort_by:sortField,
+                sort_dir: sortOrder,
+                hanghoa_loaihanghoa: productType
+            });
             if (response.success) {
                 setProducts(response.data);
             }
@@ -196,6 +202,23 @@ const ManageProduct = () => {
                 {isFiltering && (
                 <form onSubmit={handleFilter} className="mt-6 space-y-6">
                     <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-semibold font-medium text-gray-700">
+                                Loại sản phẩm
+                            </label>
+                            <select
+                                value={productType}
+                                onChange={(e) => setProductType(e.target.value)}
+                                className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="">Tất cả</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="DienThoai">Điện thoại</option>
+                                <option value="Tablet">Tablet</option>
+                                <option value="Smartwatch">Smartwatch</option>
+                                <option value="PhuKien">Phụ kiện</option>
+                            </select>
+                        </div>
                         {baseFilterAttributes.map((attr) => (
                             <div key={attr.name} className="space-y-2">
                                 <label 

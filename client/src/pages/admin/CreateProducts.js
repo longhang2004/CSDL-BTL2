@@ -42,6 +42,44 @@ const CreatProduct = () => {
     ];
 
     // Product-specific attributes (keeping your existing specificAttributes object)
+    const specificAttributes = {
+        DienThoai: [
+            { name: 'Camera', label: 'Camera' },
+            { name: 'PinSac', label: 'Dung lượng pin' },
+            { name: 'RAM_ROM', label: 'RAM/ROM' },
+            { name: 'ViXuLy', label: 'Chipset' },
+            { name: 'ManHinh', label: 'Màn hình' },
+            { name: 'ChuanKetNoi', label: 'Chuẩn kết nối' }
+        ],
+        Laptop: [
+            { name: 'ViXuLy', label: 'Vi xử lý' },
+            { name: 'CardDoHoa', label: 'Card đồ hoạ' },
+            { name: 'RAM_ROM', label: 'RAM/ROM' },
+            { name: 'Pin', label: 'Dung lượng pin' },
+            { name: 'ManHinh', label: 'Màn hình' },
+            { name: 'TrongLuong', label: 'Trọng lượng' },
+            { name: 'HeDieuHanh', label: 'Hệ điều hành' }
+        ],
+        Tablet: [
+            { name: 'Camera', label: 'Camera' },
+            { name: 'PinSac', label: 'Dung lượng pin' },
+            { name: 'RAM_ROM', label: 'RAM/ROM' },
+            { name: 'ViXuLy', label: 'Vi xử lý' },
+            { name: 'ManHinh', label: 'Màn hình' },
+            { name: 'KetNoi', label: 'Kết nối' },
+            { name: 'HoTroBut', label: 'Hỗ trơ bút' }
+        ],
+        Smartwatch: [
+            { name: 'DuongKinhMatDongHo', label: 'Dường kính mặt đồng hồ' },
+            { name: 'ManHinh', label: 'Màn hình' },
+            { name: 'ChatLieuDay', label: 'Chất liệu dây' },
+            { name: 'ThoiLuongPin', label: 'Thời lượng pin' },
+            { name: 'ChongNuoc', label: 'Chống nước' },
+            { name: 'TinhNangSucKhoe', label: 'Tính năng sức khoẻ' },
+            { name: 'KetNoi', label: 'Kết nối' }
+        ],
+        PhuKien: []
+    }
     
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -85,6 +123,7 @@ const CreatProduct = () => {
             // Format the data according to your API requirements
             const payload = {
                     ...productData,
+                    LoaiHangHoa: productType,
                     // Convert numeric fields
                     GiaMuaVao: Number(productData.GiaMuaVao),
                     GiaBanNiemYet: Number(productData.GiaBanNiemYet),
@@ -135,7 +174,7 @@ const CreatProduct = () => {
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-6">
                 {/* Product Type Selection */}
-                {/* <div className="space-y-2">
+                <div className="space-y-2">
                     <label className="block text-sm font-semibold font-medium text-gray-700">
                         Loại sản phẩm
                     </label>
@@ -147,11 +186,11 @@ const CreatProduct = () => {
                         <option value="">Vui lòng chọn loại sản phẩm</option>
                         {Object.keys(specificAttributes).map((type) => (
                             <option key={type} value={type}>
-                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                                {type}
                             </option>
                         ))}
                     </select>
-                </div> */}
+                </div>
 
                 {/* Base Attributes */}
                 <div className="grid grid-cols-2 gap-6">
@@ -179,7 +218,7 @@ const CreatProduct = () => {
                             Nhà sản xuất
                         </label>
                         <select
-                            value={productType}
+                            value={productData.MaHangSanXuat}
                             onChange={(e) => {
                                 if (e.target.value === '0') {
                                     // Show a modal to add new manufacturer
@@ -239,7 +278,7 @@ const CreatProduct = () => {
                 </div>
 
                 {/* Specific Attributes */}
-                {/* {productType && (
+                {productType && (
                     <div className="space-y-6">
                         <div className="border-t pt-6">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -267,7 +306,7 @@ const CreatProduct = () => {
                             </div>
                         </div>
                     </div>
-                )} */}
+                )}
 
                 <button
                     type="submit"
