@@ -5,70 +5,67 @@ import Swal from 'sweetalert2';
 const ManageOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const [totalPages, setTotalPages] = useState(0);
-    const pageSize = 10;
+    // const pageSize = 10;
 
-    const statusColors = {
-        'Processing': 'bg-yellow-100 text-yellow-800',
-        'Delivering': 'bg-purple-100 text-purple-800',
-        'Delivered': 'bg-green-100 text-green-800',
-        'Cancelled': 'bg-red-100 text-red-800'
-    };
-    const statusMap = {
-        Processing: 'Đang xử lý',
-        Delivering: 'Đang giao hàng',
-        Delivered: 'Đã giao hàng thành công',
-        Cancelled: 'Đã hủy',
-      };
+    // const statusColors = {
+    //     'Processing': 'bg-yellow-100 text-yellow-800',
+    //     'Delivering': 'bg-purple-100 text-purple-800',
+    //     'Delivered': 'bg-green-100 text-green-800',
+    //     'Cancelled': 'bg-red-100 text-red-800'
+    // };
+    // const statusMap = {
+    //     Processing: 'Đang xử lý',
+    //     Delivering: 'Đang giao hàng',
+    //     Delivered: 'Đã giao hàng thành công',
+    //     Cancelled: 'Đã hủy',
+    //   };
     useEffect(() => {
         fetchOrders();
-    }, [currentPage]);
+    }, []);
 
     const fetchOrders = async () => {
         setLoading(true);
-        const response = await apiQueryAllOrders({page: currentPage, limit: pageSize});
+        const response = await apiQueryAllOrders();
 
         if (response.success) {
-            setOrders(response.orderData);
-            setTotalPages(Math.ceil(response.totalOrders / pageSize));
+            setOrders(response.data);
         }
         setLoading(false);
     };
 
-    const handleStatusChange = async (orderId, newStatus) => {
-        try {
-            const result = await Swal.fire({
-                title: 'Xác nhận thay đổi',
-                text: `Bạn có chắc chắn muốn chuyển trạng thái đơn hàng sang "${newStatus}"?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Xác nhận',
-                cancelButtonText: 'Hủy'
-            });
+    // const handleStatusChange = async (orderId, newStatus) => {
+    //     try {
+    //         const result = await Swal.fire({
+    //             title: 'Xác nhận thay đổi',
+    //             text: `Bạn có chắc chắn muốn chuyển trạng thái đơn hàng sang "${newStatus}"?`,
+    //             icon: 'warning',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#3085d6',
+    //             cancelButtonColor: '#d33',
+    //             confirmButtonText: 'Xác nhận',
+    //             cancelButtonText: 'Hủy'
+    //         });
 
-            if (result.isConfirmed) {
-                const response = await apiUpdateOrder(orderId, {status: newStatus});
-                if (response.success) {
-                    Swal.fire({
-                        title: 'Thành công',
-                        text: 'Cập nhật trạng thái đơn hàng thành công',
-                        icon: 'success'
-                    });
-                    fetchOrders();
-                }
-            }
-        } catch (error) {
-            Swal.fire({
-                title: 'Lỗi',
-                text: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng',
-                icon: 'error'
-            });
-        }
-    };
+    //         if (result.isConfirmed) {
+    //             const response = await apiUpdateOrder(orderId, {status: newStatus});
+    //             if (response.success) {
+    //                 Swal.fire({
+    //                     title: 'Thành công',
+    //                     text: 'Cập nhật trạng thái đơn hàng thành công',
+    //                     icon: 'success'
+    //                 });
+    //                 fetchOrders();
+    //             }
+    //         }
+    //     } catch (error) {
+    //         Swal.fire({
+    //             title: 'Lỗi',
+    //             text: 'Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng',
+    //             icon: 'error'
+    //         });
+    //     }
+    // };
     const handleUpdate = async (orderId) => {
         // Find the current order
         const currentOrder = orders.find(order => order._id === orderId);
@@ -211,7 +208,7 @@ const ManageOrders = () => {
     return (
         <div className="w-main flex relative flex-col py-10 container mx-auto p-6">
             {/* Search Bar */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
                 <input
                     type="text"
                     placeholder="Tìm kiếm đơn hàng..."
@@ -220,7 +217,7 @@ const ManageOrders = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
-            </div>
+            </div> */}
 
             {/* Orders Table */}
             <div className="overflow-x-auto bg-white rounded-lg shadow">
@@ -228,12 +225,11 @@ const ManageOrders = () => {
                     <thead>
                         <tr className="bg-sky-800 text-white">
                             <th className="px-4 py-3 text-left">Mã đơn hàng</th>
-                            <th className="px-4 py-3 text-left">Khách hàng</th>
+                            {/* <th className="px-4 py-3 text-left">Khách hàng</th> */}
                             <th className="px-6 py-3 text-right">Tổng tiền</th>
                             <th className="px-6 py-3 text-center">Trạng thái</th>
                             <th className="px-6 py-3 text-center">Phương thức thanh toán</th>
                             <th className="px-6 py-3 text-center">Ngày đặt</th>
-                            <th className="px-6 py-3 text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -253,20 +249,20 @@ const ManageOrders = () => {
                             orders.map((order) => (
                                 <tr key={order._id} className="hover:bg-gray-50">
                                     <td className="px-4 py-4 font-medium">
-                                        {order.payOSOrderId}
+                                        {order.MaDonHang}
                                     </td>
-                                    <td className="px-4 py-4">
+                                    {/* <td className="px-4 py-4">
                                         <div>{order.name}</div>
                                         <div className="text-sm text-gray-500">{order.email}</div>
-                                    </td>
+                                    </td> */}
                                     <td className="px-6 py-4 text-right font-medium">
                                             {new Intl.NumberFormat('vi-VN', {
                                                 style: 'currency',
                                                 currency: 'VND'
-                                            }).format(order.totalPrice)}
+                                            }).format(order.TongGiaTriDonHang)}
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <select
+                                    <td className="px-6 py-4 text-sm font-medium">
+                                        {/* <select
                                             value={order.status}
                                             onChange={e => handleStatusChange(order._id, e.target.value)}
                                             className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status]}`}
@@ -280,33 +276,18 @@ const ManageOrders = () => {
                                                         {statusMap[status]}
                                                 </option>
                                             ))}
-                                        </select>
+                                        </select> */}
+                                        {order.TrangThaiDonHang}
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="font-medium">
                                             <span>
-                                                {order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : 'Quét mã VietQR'}
+                                                {order.HinhThucThanhToan}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-center whitespace-nowrap">
-                                        {new Date(order.createdAt).toLocaleDateString('vi-VN')}
-                                    </td>
-                                    <td className=" px-6 py-4">
-                                        <div className='flex flex-col space-y-2'>
-                                            <button
-                                                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
-                                                onClick={() => { handleUpdate(order._id) }}
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button
-                                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
-                                                onClick={() => { handleDelete(order._id) }}
-                                            >
-                                                Xóa
-                                            </button>
-                                        </div>
+                                        {new Date(order.ThoiGianDatHang).toLocaleDateString('vi-VN')}
                                     </td>
                                 </tr>
                             ))
@@ -316,7 +297,7 @@ const ManageOrders = () => {
             </div>
 
             {/* Pagination */}
-            <div className="mt-6 flex justify-center space-x-2">
+            {/* <div className="mt-6 flex justify-center space-x-2">
                 <button
                     className={`px-4 py-2 rounded transition-colors ${
                         currentPage === 1 
@@ -342,7 +323,7 @@ const ManageOrders = () => {
                 >
                     Trang sau
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };

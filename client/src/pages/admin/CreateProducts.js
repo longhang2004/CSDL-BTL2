@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiAddProduct } from 'apis/product';
 import Swal from 'sweetalert2';
 
@@ -6,91 +6,54 @@ const CreatProduct = () => {
     const [productType, setProductType] = useState('');
     const [productData, setProductData] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [manufacturers, setManufacturers] = useState([]);
+    const [isAddingManufacturer, setIsAddingManufacturer] = useState(false);
+    const [newManufacturer, setNewManufacturer] = useState({});
+
+    const fetchManufacturers = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiGetManufacturers();
+            if (response.success === true) {
+                setManufacturers(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch manufacturers: ', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchManufacturers();
+    }, []);
+
 
     // Base attributes that all products share
     const baseAttributes = [
         { name: 'Ten', label: 'Tên sản phẩm', required: true },
         { name: 'TonKho', label: 'Số lượng' },
-        { name: 'GiaMuaVao', label: 'Giá tiền (đơn vị VNĐ)', required: true },
-        { name: 'GiaBanNiemYet', label: 'Giá tiền (đơn vị VNĐ)', required: true },
+        { name: 'GiaMuaVao', label: 'Giá mua vào (đơn vị VNĐ)', required: true },
+        { name: 'GiaBanNiemYet', label: 'Giá bán (đơn vị VNĐ)', required: true },
         { name: 'TenHangSanXuat', label: 'Hãng sản xuất' },
         { name: 'DiaChi', label: 'Xuất xứ' },
         { name: 'MoTa', label: 'Mô tả' },
     ];
 
     // Product-specific attributes (keeping your existing specificAttributes object)
-    const specificAttributes = {
-      phone: [
-          { name: 'camera', label: 'Camera' },
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'ramRom', label: 'RAM/ROM' },
-          { name: 'processor', label: 'Chipset' },
-          { name: 'screen', label: 'Màn hình' },
-          { name: 'sim', label: 'Thẻ SIM' },
-          { name: 'connection', label: 'Hỗ trợ mạng' }
-      ],
-      laptop: [
-          { name: 'cpu', label: 'CPU' },
-          { name: 'gpu', label: 'GPU' },
-          { name: 'ram', label: 'RAM' },
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'screen', label: 'Màn hình' },
-          { name: 'hardDrive', label: 'Ổ cứng' },
-          { name: 'connectionPorts', label: 'Cổng kết nối' }
-      ],
-      tablet: [
-          { name: 'camera', label: 'Camera' },
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'ramRom', label: 'RAM/ROM' },
-          { name: 'processor', label: 'GPU' },
-          { name: 'screen', label: 'Màn hình' },
-          { name: 'sim', label: 'Thẻ SIM' },
-          { name: 'connection', label: 'Hỗ trợ mạng' }
-      ],
-      smartwatch: [
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'screen', label: 'Màn hình' },
-          { name: 'connection', label: 'Hỗ trợ mạng' },
-          { name: 'certificate', label: 'Certificate' }
-      ],
-      powerbank: [
-          { name: 'capacity', label: 'Dung lượng pin' },
-          { name: 'input', label: 'Input' },
-          { name: 'output', label: 'Output' },
-          { name: 'numOfPorts', label: 'Số lượng cổng kết nối' }
-      ],
-      headphone: [
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'connection', label: 'Hỗ trợ kết nối' },
-          { name: 'certificate', label: 'Certificate' },
-          { name: 'typeOfHeadphone', label: 'Kiểu tai nghe' }
-      ],
-      charger: [
-          { name: 'input', label: 'Input' },
-          { name: 'output', label: 'Output' },
-          { name: 'typeOfPort', label: 'Loại cổng sạc' }
-      ],
-      case: [
-          { name: 'material', label: 'Chất liệu' },
-          { name: 'color', label: 'Màu' },
-          { name: 'productSupported', label: 'Tương thích với thiết bị' }
-      ],
-      mouse: [
-          { name: 'connection', label: 'Hỗ trợ kết nối' },
-          { name: 'sensor', label: 'Cảm biến' },
-          { name: 'battery', label: 'Dung lượng pin' },
-          { name: 'weight', label: 'Khối lượng' }
-      ],
-      keyboard: [
-          { name: 'connection', label: 'Hỗ trợ kết nối' },
-          { name: 'layout', label: 'Layout' },
-          { name: 'size', label: 'Size' }
-      ]
-      };
-
+    
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setProductData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleNewManufacturerChange = (e) => {
+        const { name, value } = e.target;
+        setNewManufacturer(prev => ({
             ...prev,
             [name]: value
         }));
@@ -100,6 +63,25 @@ const CreatProduct = () => {
         e.preventDefault();
         try {
             setIsSubmitting(true);
+            if (isAddingManufacturer) {
+                // Add new manufacturer first
+                const response = await apiAddManufacturer(newManufacturer);
+                if (response.success === true) {
+                    // Fetch manufacturers again
+                    fetchManufacturers();
+                    // Reset new manufacturer data
+                    setNewManufacturer({});
+                    // Reset the form
+                }
+                else {
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi thêm nhà sản xuất',
+                        icon: 'error'
+                    });
+                }
+                setIsAddingManufacturer(false);
+            }
             // Format the data according to your API requirements
             const payload = {
                     ...productData,
@@ -140,6 +122,10 @@ const CreatProduct = () => {
             setIsSubmitting(false);
         }
     };
+
+    if (isLoading) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className="w-main p-6 border-sky-600 border-2 container mx-auto bg-white mt-10 rounded-lg shadow-lg">
@@ -188,6 +174,68 @@ const CreatProduct = () => {
                             />
                         </div>
                     ))}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold font-medium text-gray-700">
+                            Nhà sản xuất
+                        </label>
+                        <select
+                            value={productType}
+                            onChange={(e) => {
+                                if (e.target.value === '0') {
+                                    // Show a modal to add new manufacturer
+                                    setIsAddingManufacturer(true);
+                                }
+                                setProductData({...productData, MaHangSanXuat: e.target.value})
+                            }}
+                            className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Vui lòng chọn loại sản phẩm</option>
+                            <option value="0">Thêm nhà sản xuất mới</option>
+                            {manufacturers.map((manufacturer) => (
+                                <option key={manufacturer.MaHangSanXuat} value={manufacturer.MaHangSanXuat}>
+                                    {manufacturer.TenHangSanXuat}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {isAddingManufacturer && (
+                        <div key={"TenHangSanXuat"} className="space-y-2">
+                            <label 
+                                htmlFor={"TenHangSanXuat"}
+                                className="block text-sm font-semibold font-medium text-gray-700"
+                            >
+                                {"Tên hãng sản xuất"}
+                                <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                id={"TenHangSanXuat"}
+                                name={"TenHangSanXuat"}
+                                required={true}
+                                onChange={handleNewManufacturerChange}
+                                value={''}
+                                className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                    )}
+                    {isAddingManufacturer && (
+                        <div key={"DiaChi"} className="space-y-2">
+                            <label 
+                                htmlFor={"DiaChi"}
+                                className="block text-sm font-semibold font-medium text-gray-700"
+                            >
+                                {"Địa chỉ"}
+                                <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                id={"DiaChi"}
+                                name={"DiaChi"}
+                                required={true}
+                                onChange={handleNewManufacturerChange}
+                                value={''}
+                                className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        )}
                 </div>
 
                 {/* Specific Attributes */}
