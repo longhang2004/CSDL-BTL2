@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Login } from './pages/public';
-import { CreateProducts, ManageProducts } from './pages/admin';
+import { CreateProducts, ManageProducts, ManageOrders , ManageUsers } from './pages/admin';
 // import { CheckOut, Personal, MemberLayout } from './pages/member';
 import path from './utils/path';
 // import { getCategories } from './store/app/asyncActions'
+import { AdminLayout } from './pages/admin';
 import { useDispatch } from 'react-redux'
 import { ToastContainer } from 'react-toastify';
 
@@ -13,9 +14,6 @@ import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const dispatch = useDispatch()
   
-  useEffect(() => {
-    dispatch(getCategories())
-  }, [])
 
   return (
     <div className="font-main relative">

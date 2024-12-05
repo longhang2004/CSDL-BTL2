@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiFetchProductByPage, apiFetchProductByName, apiDeleteProduct } from 'apis'
+import { apiGetProducts, apiDeleteProduct, apiGetProductByFilter } from '../../apis'
 import Swal from 'sweetalert2';
 import UpdateProduct from './UpdateProduct'
 
@@ -9,6 +9,7 @@ const ManageProduct = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isFiltering, setIsFiltering] = useState(false);
     const [filterTerm, setFilterTerm] = useState({});
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortField, setSortField] = useState('');
     const [sortOrder, setSortOrder] = useState('');
@@ -19,38 +20,35 @@ const ManageProduct = () => {
     // Base attributes that all products share
     const baseFilterAttributes = [
         { name: 'hanghoa_ten', label: 'Tên sản phẩm'},
-        { name: 'tonkho_min', label: 'Tồn kho tối thiểu' },
-        { name: 'tonkho_max', label: 'Tồn kho tối đa' },
-        { name: 'giamua_min', label: 'Giá mua vào tối thiểu'},
-        { name: 'giamua_max', label: 'Giá mua vào tối đa'},
-        { name: 'giaban_min', label: 'Giá bán tối thiểu'},
-        { name: 'giaban_max', label: 'Giá bán tối đa'},
+        { name: 'hanghoa_tonkho_min', label: 'Tồn kho tối thiểu' },
+        { name: 'hanghoa_tonkho_max', label: 'Tồn kho tối đa' },
+        { name: 'hanghoa_giamua_min', label: 'Giá mua vào tối thiểu'},
+        { name: 'hanghoa_giamua_max', label: 'Giá mua vào tối đa'},
+        { name: 'hanghoa_giaban_min', label: 'Giá bán tối thiểu'},
+        { name: 'hanghoa_giaban_max', label: 'Giá bán tối đa'},
         { name: 'hangsanxuat_ten', label: 'Hãng sản xuất' },
-        { name: 'danhgia_min', label: 'Đánh giá tối thiểu' },
-        { name: 'danhgia_max', label: 'Đánh giá tối đa' },
+        { name: 'hanghoa_danhgia_min', label: 'Đánh giá tối thiểu' },
+        { name: 'hanghoa_danhgia_max', label: 'Đánh giá tối đa' },
         { name: 'hangsanxuat_diachi', label: 'Xuất xứ' },
         { name: 'hanghoa_mota', label: 'Mô tả' }
     ];
 
     const sortAttributes = [
-        { name: 'hh.hanghoa_ten', label: 'Tên sản phẩm'},
-        { name: 'hh.tonkho_min', label: 'Tồn kho tối thiểu' },
-        { name: 'hh.tonkho_max', label: 'Tồn kho tối đa' },
-        { name: 'hh.giamua_min', label: 'Giá mua vào tối thiểu'},
-        { name: 'hh.giamua_max', label: 'Giá mua vào tối đa'},
-        { name: 'hh.giaban_min', label: 'Giá bán tối thiểu'},
-        { name: 'hh.giaban_max', label: 'Giá bán tối đa'},
-        { name: 'hsx.hangsanxuat_ten', label: 'Hãng sản xuất' },
-        { name: 'hh.danhgia_min', label: 'Đánh giá tối thiểu' },
-        { name: 'hh.danhgia_max', label: 'Đánh giá tối đa' },
-        { name: 'hsx.hangsanxuat_diachi', label: 'Xuất xứ' },
-        { name: 'hh.hanghoa_mota', label: 'Mô tả' }
+        { name: 'Ten', label: 'Tên sản phẩm', required: true },
+        { name: 'TonKho', label: 'Số lượng' },
+        { name: 'GiaMuaVao', label: 'Giá mua vào (đơn vị VNĐ)', required: true },
+        { name: 'GiaBanNiemYet', label: 'Giá bán (đơn vị VNĐ)', required: true },
+        { name: 'hsx.TenHangSanXuat', label: 'Hãng sản xuất' },
+        { name: 'hsx.DiaChi', label: 'Xuất xứ' },
+        { name: 'MoTa', label: 'Mô tả' },
+        { name: 'SoSaoDanhGia', label: 'Đánh giá' },
+        { name: 'LoaiHangHoa', label: 'Loại sản phẩm' }
     ];
 
     useEffect(() => {
         fetchProducts();
     // }, [currentPage, sortField, sortOrder]);
-    },[]);
+    },[editProduct, viewProduct]);
 
     const handleViewProduct = (MaHangHoa) => {
         setViewProduct(MaHangHoa) // Store only the ID
@@ -62,9 +60,10 @@ const ManageProduct = () => {
 
     const fetchProducts = async () => {
         setLoading(true);
-        const response = await apiFetchProductByPage();
+        const response = await apiGetProducts();
         if (response.success) {
             setProducts(response.data);
+            setFilteredProducts(response.data);
             setLoading(false);
         } 
     };
@@ -89,25 +88,35 @@ const ManageProduct = () => {
             ...prev,
             [name]: value
         }));
+        console.log(filterTerm);
     };
 
     const handleFilter = async () => {
+        
         if (isFiltering&&filterTerm) {
             setLoading(true);
-            const response = await apiFetchProductByFilter({
+            console.log(filterTerm);
+            const response = await apiGetProductByFilter({
                 ...filterTerm,
                 sort_by:sortField,
                 sort_dir: sortOrder,
-                hanghoa_loaihanghoa: productType
+                loai_hang_hoa: productType
             });
             if (response.success) {
                 setProducts(response.data);
+                console.log(response.query)
             }
             setLoading(false);
         } else {
             // If filter term is empty, fetch all products
             fetchProducts();
         }
+
+        // if (isFiltering) {
+        //     setLoading(true);
+        //     setFilteredProducts(filteredProducts.filter((product) => {
+        //         if ()
+        //     }));
     };
 
     // const handleSubmitFilter = (e) => {
@@ -115,12 +124,12 @@ const ManageProduct = () => {
     //     handleFilter();
     // };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            setCurrentPage(1); // Reset to first page when searching
-            handleSearch();
-        }
-    };
+    // const handleKeyDown = (e) => {
+    //     if (e.key === 'Enter') {
+    //         setCurrentPage(1); // Reset to first page when searching
+    //         handleSearch();
+    //     }
+    // };
 
     const handleDeleteProduct = async (MaHangHoa) => {
         try {
@@ -136,7 +145,7 @@ const ManageProduct = () => {
             });
 
             if (result.isConfirmed) {
-                const response = await apiDeleteProduct(MaHangHoa);
+                const response = await apiDeleteProduct({MaHangHoa});
                 
                 if (response.success) {
                     Swal.fire({
@@ -200,7 +209,7 @@ const ManageProduct = () => {
                     Lọc sản phẩm
                 </button>
                 {isFiltering && (
-                <form onSubmit={handleFilter} className="mt-6 space-y-6">
+                <div  className="mt-6 space-y-6">
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold font-medium text-gray-700">
@@ -211,12 +220,12 @@ const ManageProduct = () => {
                                 onChange={(e) => setProductType(e.target.value)}
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
-                                <option value="">Tất cả</option>
-                                <option value="Laptop">Laptop</option>
-                                <option value="DienThoai">Điện thoại</option>
-                                <option value="Tablet">Tablet</option>
-                                <option value="Smartwatch">Smartwatch</option>
-                                <option value="PhuKien">Phụ kiện</option>
+                                <option key="Tatca" value="">Tất cả</option>
+                                <option key="Laptop" value="Laptop">Laptop</option>
+                                <option key="DienThoai" value="DienThoai">Điện thoại</option>
+                                <option key="Tablet" value="Tablet">Tablet</option>
+                                <option key="Smartwatch" value="Smartwatch">Smartwatch</option>
+                                <option key="PhuKien" value="PhuKien">Phụ kiện</option>
                             </select>
                         </div>
                         {baseFilterAttributes.map((attr) => (
@@ -232,7 +241,7 @@ const ManageProduct = () => {
                                     name={attr.name}
                                     required={attr.required}
                                     onChange={handleFilterInputChange}
-                                    value={productData[attr.name] || ''}
+                                    value={filterTerm[attr.name] || ''}
                                     className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
@@ -242,11 +251,11 @@ const ManageProduct = () => {
                                 Sắp xếp theo
                             </label>
                             <select
-                                value={productType}
+                                value={sortField}
                                 onChange={(e) => setSortField(e.target.value)}
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
-                                <option value="">Vui lòng chọn trường sắp xếp</option>
+                                <option key="none" value="">Vui lòng chọn trường sắp xếp</option>
                                 {sortAttributes.map((field) => (
                                     <option key={field.name} value={field.name}>
                                         {field.label}
@@ -259,28 +268,41 @@ const ManageProduct = () => {
                                 Thứ tự sắp xếp
                             </label>
                             <select
-                                value={productType}
+                                value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
-                                <option value="">Vui lòng chọn thứ tự sắp xếp</option>
-                                <option value="ASC">Tăng dần</option>
-                                <option value="DESC">Giảm dần</option>
+                                <option key="none" value="">Vui lòng chọn thứ tự sắp xếp</option>
+                                <option key="asc" value="ASC">Tăng dần</option>
+                                <option key="desc" value="DESC">Giảm dần</option>
                             </select>
                         </div>
                     </div>
                     <button
-                        type="submit"
-                        disabled={isFiltering}
+                        disabled={loading}
+                        onClick={handleFilter}
                         className={`w-full py-3 px-4 rounded-md transition-colors duration-200 
-                            ${isFiltering 
+                            ${loading 
                                 ? 'bg-gray-400 cursor-not-allowed' 
                                 : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
                             } text-white`}
                     >
-                        {isFiltering ? 'Đang xử lý...' : 'Thêm sản phẩm'}
+                        {loading ? 'Đang xử lý...' : 'Lọc sản phẩm'}
                     </button>
-                </form>)}
+                    <button 
+                        onClick={() => {
+                            setFilterTerm({});
+                            setIsFiltering(false);
+                            setSortField('');
+                            setSortOrder('');
+                            setProductType('');
+                            fetchProducts();
+                        }}
+                        className="w-full py-3 px-4 rounded-md bg-red-400 hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-white"
+                    >
+                        Xóa bộ lọc
+                    </button>
+                    </div>)}
                 
                 {/* {isFiltering && (
                     <div className="mt-4 space-y-4">
@@ -310,8 +332,8 @@ const ManageProduct = () => {
                         <tr className="bg-sky-800 text-white">
                             <th className="px-6 py-3 text-left">STT</th>
                             <th className="px-6 py-3 text-left">Tên sản phẩm</th>
-                            <th className="px-6 py-3 text-right">Giá mua vào</th>
-                            <th className="px-6 py-3 text-right">Giá bán niêm yết</th>
+                            <th className="px-6 py-3 text-center">Giá mua vào</th>
+                            <th className="px-6 py-3 text-center">Giá bán niêm yết</th>
                             <th className="px-6 py-3 text-center">Tồn kho</th>
                             <th className="px-6 py-3 text-center">Đánh giá</th>
                             <th className="px-6 py-3 text-center">Hãng sản xuất</th>

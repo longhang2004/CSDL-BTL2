@@ -10,8 +10,12 @@ instance.interceptors.request.use(function (config) {
     let localStorageData = window.localStorage.getItem('persist:shop/user')
     if(localStorageData && typeof localStorageData === 'string' ) {
       localStorageData = JSON.parse(localStorageData);
-      const accessToken = JSON.parse(localStorageData?.token)
-      config.headers = {Authorization: `Bearer ${accessToken}`}
+      // const accessToken = JSON.parse(localStorageData?.token)
+      const username = JSON.parse(localStorageData?.username)
+      const password = JSON.parse(localStorageData?.password)
+      config.headers = {
+        Authorization: `Bearer ${password}`,
+        username, password}
       return config
     }
     else return config;
@@ -28,6 +32,7 @@ instance.interceptors.response.use(function (response) {
   }, function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+    console.log(error)
     return error.response.data;
   });
 

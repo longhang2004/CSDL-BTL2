@@ -42,7 +42,7 @@ export function direct_query(request, response) {
 }
 
 export function login(request, response) {
-    var auth = getauth(request.headers);
+    var auth = getauth(request.body);
     var query_str = "SELECT 1";
     query(query_str, auth, (error, rows) => {
         if (error) {
@@ -75,10 +75,10 @@ export function get_hang_san_xuat(request, response) {
 }
 
 export function get_hang_hoa(request, response) {
-    var auth = getauth(request.headers)
+    var auth = getauth(request.headers);
 
     var query_str = "SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat";
-    query_str += " WHERE '' = ''"
+    query_str += " WHERE '' = ''";
     // Lọc tên hàng hoá
     if (!isEmpty(request.query.hanghoa_ten)) {
         query_str += ` AND LOWER(hh.Ten) LIKE '%${request.query.hanghoa_ten}%'`
@@ -127,6 +127,10 @@ export function get_hang_hoa(request, response) {
         if (tonkho_min.length !== 0 && tonkho_max.length !== 0)
             query_str += ` AND hh.TonKho BETWEEN ${tonkho_min} AND ${tonkho_max}`;
     }
+    // Lọc loại hàng hóa
+    if (!isEmpty(request.query.loai_hang_hoa)) {
+        query_str += ` AND hh.LoaiHangHoa = '${request.query.loai_hang_hoa}'`
+    }
 
     if (!isEmpty(request.query.sort_by)) {
         var sort_by = request.query.sort_by;
@@ -140,6 +144,8 @@ export function get_hang_hoa(request, response) {
         if (sort_by.length !== 0 && sort_dir.length !== 0)
             query_str += ` ORDER BY ${sort_by} ${sort_dir}`;
     }
+
+    console.log("QUERY : " + query_str);
 
     query(query_str, auth, (error, rows) => {
         if (error) {
@@ -155,12 +161,73 @@ export function get_hang_hoa(request, response) {
     });
 };
 
+export const create_chi_tiet_hang_hoa = (request, response) => {
+    var auth = getauth(request.headers)
+    var body = request.body;
+
+    const insert_hanghoa = () => {
+        var query_str = `INSERT INTO HangHoa(MaHangSanXuat, Ten, TonKho, GiaMuaVao, GiaBanNiemYet, LoaiHangHoa, MoTa) VALUES (${body.MaHangSanXuat}, '${body.Ten}', ${body.TonKho}, ${body.GiaMuaVao}, ${body.GiaBanNiemYet},'${body.LoaiHangHoa}', '${body.MoTa}');
+            SELECT SCOPE_IDENTITY() as MaHangHoa;`;
+        query(query_str, auth, (error, rows) => {
+            if (error) {
+                deal_with_error(query_str, response, error);
+            }
+            else
+                response.json({
+                    success: true,
+                    message: "Thêm dữ liệu thành công",
+                    query: query_str,
+                    data: rows.recordset
+                });
+        });
+    }
+
+    insert_hanghoa();
+}
+
+export const get_chi_tiet_hang_hoa = (request, response) => {
+    var auth = getauth(request.headers);
+    var query_str;
+    // if (request.query.MaHangHoa == 'PhuKien') query_str = `SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi', loai.* FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat WHERE hh.MaHangHoa = ${request.query.MaHangHoa}`;
+    // else query_str = `SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat INNER JOIN ${request.query.LoaiHangHoa} as loai ON hh.MaHangHoa = loai.MaHangHoa WHERE hh.MaHangHoa = ${request.query.MaHangHoa}`;
+    query_str = `SELECT ct.* FROM ${request.query.LoaiHangHoa} as loai WHERE ct.MaHangHoa = ${request.query.MaHangHoa}`
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.json({
+                success: true,
+                message: "Lấy dữ liệu thành công",
+                query: query_str,
+                data: rows.recordset
+            });
+    });
+}
+
+export const update_chi_tiet_hang_hoa = (request, response) => {
+    var auth = getauth(request.headers);
+    var query_str = `UPDATE ${request.body.LoaiHangHoa} SET ${request.body.TenCot} = '${request.body.GiaTriMoi}' WHERE MaHangHoa = ${request.body.MaHangHoa}`;
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.json({
+                success: true,
+                message: "Cập nhật dữ liệu thành công",
+                query: query_str,
+                data: rows
+            });
+    });
+}
+
 export function create_hang_hoa(request, response) {
     var auth = getauth(request.headers)
     var body = request.body;
 
     const insert_hanghoa = () => {
-        var query_str = `INSERT INTO HangHoa(MaHangSanXuat, Ten, GiaMuaVao, GiaBanNiemYet, MoTa) VALUES (${body.MaHangSanXuat}, '${body.Ten}', ${body.GiaMuaVao}, ${body.GiaBanNiemYet}, '${body.MoTa}');
+        var query_str = `INSERT INTO HangHoa(MaHangSanXuat, Ten, TonKho, GiaMuaVao, GiaBanNiemYet, LoaiHangHoa, MoTa) VALUES (${body.MaHangSanXuat}, '${body.Ten}', ${body.TonKho}, ${body.GiaMuaVao}, ${body.GiaBanNiemYet},'${body.LoaiHangHoa}', '${body.MoTa}');
             SELECT SCOPE_IDENTITY() as MaHangHoa;`;
         query(query_str, auth, (error, rows) => {
             if (error) {
@@ -197,8 +264,20 @@ export function update_hang_hoa(request, response) {
     var auth = getauth(request.headers)
     var body = request.body;
     var set_query = "";
-    if (!isEmpty(body.MaHangSanXuat))
+    if (!isEmpty(body.MaHangSanXuat)){
+        if (body.MaHangSanXuat == -1) {
+            var query_str = `INSERT INTO HangSanXuat (TenHangSanXuat, DiaChi) VALUES ('${body.TenHangSanXuatMoi}', '${body.DiaChiHangSanXuatMoi}'); 
+            SELECT CAST(scope_identity() AS int) as new_id;`;
+            query(query_str, auth, (error, rows) => {
+                if (error) {
+                    deal_with_error(query_str, response, error);
+                }
+                else
+                    body.MaHangSanXuat = rows.recordset[0].new_id
+            });
+        }
         set_query += `MaHangSanXuat='${body.MaHangSanXuat}',`;
+    }
     if (!isEmpty(body.Ten))
         set_query += `Ten='${body.Ten}',`;
     if (!isEmpty(body.GiaMuaVao))

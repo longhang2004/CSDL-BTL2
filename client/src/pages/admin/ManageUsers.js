@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { apiGetAllUsers, apiDeleteUser, apiUpdateUser } from 'apis'
+import { apiGetUsers } from '../../apis'
 import Swal from 'sweetalert2';
 
 const ManageUsers = () => {
@@ -7,7 +7,7 @@ const ManageUsers = () => {
     const [loading, setLoading] = useState(false);
     const fetchUsers = async () => {
         setLoading(true);
-        const response = await apiGetAllUsers();
+        const response = await apiGetUsers();
         if (response.success) {
             setUsers(response.data);
         }

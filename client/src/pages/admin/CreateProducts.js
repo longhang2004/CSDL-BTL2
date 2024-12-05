@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiAddProduct } from 'apis/product';
+import { apiCreateProduct, apiGetManufacturers } from '../../apis/product';
 import Swal from 'sweetalert2';
 
 const CreatProduct = () => {
@@ -36,8 +36,8 @@ const CreatProduct = () => {
         { name: 'TonKho', label: 'Số lượng' },
         { name: 'GiaMuaVao', label: 'Giá mua vào (đơn vị VNĐ)', required: true },
         { name: 'GiaBanNiemYet', label: 'Giá bán (đơn vị VNĐ)', required: true },
-        { name: 'TenHangSanXuat', label: 'Hãng sản xuất' },
-        { name: 'DiaChi', label: 'Xuất xứ' },
+        // { name: 'TenHangSanXuat', label: 'Hãng sản xuất' },
+        // { name: 'DiaChi', label: 'Xuất xứ' },
         { name: 'MoTa', label: 'Mô tả' },
     ];
 
@@ -91,7 +91,7 @@ const CreatProduct = () => {
 
     const handleNewManufacturerChange = (e) => {
         const { name, value } = e.target;
-        setNewManufacturer(prev => ({
+        setProductData(prev => ({
             ...prev,
             [name]: value
         }));
@@ -101,25 +101,9 @@ const CreatProduct = () => {
         e.preventDefault();
         try {
             setIsSubmitting(true);
-            if (isAddingManufacturer) {
-                // Add new manufacturer first
-                const response = await apiAddManufacturer(newManufacturer);
-                if (response.success === true) {
-                    // Fetch manufacturers again
-                    fetchManufacturers();
-                    // Reset new manufacturer data
-                    setNewManufacturer({});
-                    // Reset the form
-                }
-                else {
-                    Swal.fire({
-                        title: 'Lỗi',
-                        text: 'Có lỗi xảy ra khi thêm nhà sản xuất',
-                        icon: 'error'
-                    });
-                }
-                setIsAddingManufacturer(false);
-            }
+
+            console.log(productData)
+            
             // Format the data according to your API requirements
             const payload = {
                     ...productData,
@@ -127,10 +111,13 @@ const CreatProduct = () => {
                     // Convert numeric fields
                     GiaMuaVao: Number(productData.GiaMuaVao),
                     GiaBanNiemYet: Number(productData.GiaBanNiemYet),
+                    MaHangSanXuat: isAddingManufacturer? -1: Number(productData.MaHangSanXuat),
+                    TenHangSanXuatMoi: isAddingManufacturer? productData.TenHangSanXuat: '',
+                    DiaChiHangSanXuatMoi: isAddingManufacturer? productData.DiaChi: '',
                     TonKho: productData.TonKho ? Number(productData.TonKho) : 0,
             };
 
-            const response = await apiAddProduct(payload);
+            const response = await apiCreateProduct(payload);
 
             if (response.success === true) {
               Swal.fire({
@@ -224,11 +211,14 @@ const CreatProduct = () => {
                                     // Show a modal to add new manufacturer
                                     setIsAddingManufacturer(true);
                                 }
-                                setProductData({...productData, MaHangSanXuat: e.target.value})
+                                else{
+                                    setIsAddingManufacturer(false);
+                                    setProductData({...productData, MaHangSanXuat: e.target.value})
+                                }
                             }}
                             className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">Vui lòng chọn loại sản phẩm</option>
+                            <option value="">Vui lòng chọn nhà sản xuất</option>
                             <option value="0">Thêm nhà sản xuất mới</option>
                             {manufacturers.map((manufacturer) => (
                                 <option key={manufacturer.MaHangSanXuat} value={manufacturer.MaHangSanXuat}>
@@ -251,7 +241,7 @@ const CreatProduct = () => {
                                 name={"TenHangSanXuat"}
                                 required={true}
                                 onChange={handleNewManufacturerChange}
-                                value={''}
+                                value={productData.TenHangSanXuat || '' }
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -270,7 +260,7 @@ const CreatProduct = () => {
                                 name={"DiaChi"}
                                 required={true}
                                 onChange={handleNewManufacturerChange}
-                                value={''}
+                                value={ productData.DiaChi || '' }
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiQueryAllOrders, apiUpdateOrder, apiGetOrderById, apiDeleteOrder } from 'apis';
+import { apiGetOrders } from '../../apis';
 import Swal from 'sweetalert2';
 
 const ManageOrders = () => {
@@ -26,7 +26,7 @@ const ManageOrders = () => {
 
     const fetchOrders = async () => {
         setLoading(true);
-        const response = await apiQueryAllOrders();
+        const response = await apiGetOrders();
 
         if (response.success) {
             setOrders(response.data);

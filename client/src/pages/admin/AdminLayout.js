@@ -1,12 +1,12 @@
 import React from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
-import path from 'utils/path'
+import path from '../../utils/path'
 import { useSelector } from 'react-redux'
-import { AdminSidebar } from 'components'
+import { AdminSidebar } from '../../components'
 
 const AdminLayout = () => {
   const { isLoggedIn } = useSelector(state => state.user);
-  console.log({isLoggedIn, current});
+  console.log({isLoggedIn});
   if(!isLoggedIn) return <Navigate to={`/${path.LOGIN}`} replace={true} />
   return (
     <div className='flex w-full bg-gray-100 min-h-screen relative text-gray-900'>

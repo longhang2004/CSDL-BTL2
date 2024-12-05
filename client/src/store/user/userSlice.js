@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import * as actions from './asyncActions'
 
 const userSlice = createSlice({
     name: 'user',

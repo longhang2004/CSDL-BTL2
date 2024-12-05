@@ -16,7 +16,7 @@ export const adminSidebar = [
         id: 1,
         type: 'SINGLE',
         text: 'Quản lý tài khoản',
-        path: `/${path.ADMIN}/${path.MANAGE_USERS}`,
+        path: `http://localhost:3000/${path.MANAGE_USERS}`,
         icon: <MdOutlineGroups size={20}/>
     },
     {
@@ -24,20 +24,20 @@ export const adminSidebar = [
         type: 'SINGLE',
         text: 'Tạo sản phẩm',
         icon: <RiProductHuntLine size={20}/>,
-        path: `/${path.ADMIN}/${path.CREATE_PRODUCT}`
+        path: `http://localhost:3000/${path.CREATE_PRODUCT}`
     },
     {
         id: 3,
         type: 'SINGLE',
         text: 'Quản lý sản phẩm',
-        path: `/${path.ADMIN}/${path.MANAGE_PRODUCTS}`,
+        path: `http://localhost:3000/${path.MANAGE_PRODUCTS}`,
         icon: <TbFileInvoice size={20}/> 
     },
     {
         id: 4,
         type: 'SINGLE',
         text: 'Quản lý đơn hàng',
-        path: `/${path.ADMIN}/${path.MANAGE_ORDERS}`,
+        path: `http://localhost:3000/${path.MANAGE_ORDERS}`,
         icon: <TbFileInvoice size={20}/> 
     }
 ]

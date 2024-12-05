@@ -16,9 +16,9 @@ const path = {
     ADMIN: '/',
     DASHBOARD: 'dasboard',
     MANAGE_USERS: 'manage-users',
-    MANAGE_PRODUCTS: '/manage-products',
+    MANAGE_PRODUCTS: 'manage-products',
     MANAGE_ORDERS: 'manage-orders',
-    CREATE_PRODUCT: '/create-product',
+    CREATE_PRODUCT: 'create-product',
 
     // MEMBER
     MEMBER: 'member',
