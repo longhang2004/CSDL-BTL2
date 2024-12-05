@@ -127,6 +127,10 @@ export function get_hang_hoa(request, response) {
         if (tonkho_min.length !== 0 && tonkho_max.length !== 0)
             query_str += ` AND hh.TonKho BETWEEN ${tonkho_min} AND ${tonkho_max}`;
     }
+    // Lọc loại hàng hóa
+    if (!isEmpty(request.query.loai_hang_hoa)) {
+        query_str += ` AND hh.LoaiHangHoa = '${request.query.loai_hang_hoa}'`
+    }
 
     if (!isEmpty(request.query.sort_by)) {
         var sort_by = request.query.sort_by;
