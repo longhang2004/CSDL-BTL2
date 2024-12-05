@@ -1,5 +1,73 @@
 /* src/ProductDetails.css */
 /* CSS để làm cho tên sản phẩm bự hơn */
+.category-item {
+    font-weight: normal;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, font-weight 0.3s;
+}
+
+.category-item.active {
+    font-weight: bold;
+    background-color: #0963e0;
+    border: 2px solid #162250;
+}
+
+.category-bar {
+    display: flex;
+    /* Tạo thanh ngang */
+    justify-content: center;
+    /* Canh giữa các phần tử trong thanh */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    gap: 20px;
+    /* Khoảng cách giữa các nút */
+    padding: 0px;
+    /* Khoảng cách bên trong thanh */
+    background-color: #f8f9fa;
+    /* Màu nền thanh */
+    border-radius: 8px;
+    /* Bo góc thanh */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Hiệu ứng bóng */
+    margin: 20px auto;
+    /* Căn giữa thanh trên trang */
+    width: fit-content;
+    /* Tự động điều chỉnh chiều rộng theo nội dung */
+}
+
+.category-item {
+    background-color: #3ab8e9;
+    /* Màu nền nút */
+    color: white;
+    /* Màu chữ */
+    border: none;
+    /* Xóa viền nút */
+    border-radius: 5px;
+    /* Bo góc nút */
+    padding: 10px 20px;
+    /* Khoảng cách bên trong nút */
+    font-size: 16px;
+    /* Kích thước chữ */
+    cursor: pointer;
+    /* Thay đổi con trỏ khi hover */
+    transition: background-color 0.3s ease;
+    /* Hiệu ứng chuyển đổi màu khi hover */
+}
+
+.category-item:hover {
+    background-color: #0056b3;
+    /* Màu nền khi hover */
+}
+
+.category-item:active {
+    background-color: #003f7f;
+    /* Màu nền khi click */
+}
+
 .product-name {
     font-size: 2rem;
     /* Điều chỉnh kích thước chữ */
@@ -28,7 +96,17 @@
     margin-bottom: 10px;
 }
 
+/* .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+}
+
 button {
+    display: block;
+    margin-bottom: 10px;
+   
     padding: 5px 10px;
     background-color: #59b6e1;
     color: white;
@@ -39,7 +117,74 @@ button {
 
 button:hover {
     background-color: #4678dc;
+} */
+#detailButton,
+#reviewButton {
+    margin-bottom: 10px;
+    /* Tạo khoảng cách giữa các nút */
 }
+
+button {
+
+    /* Loại bỏ viền */
+    /* Màu chữ trắng */
+    padding: 15px 30px;
+    /* Tăng kích thước padding để khung nút lớn hơn */
+    text-align: center;
+    /* Căn giữa nội dung */
+    text-decoration: none;
+    /* Loại bỏ gạch chân */
+    display: inline-block;
+    /* Cho phép căn chỉnh linh hoạt */
+    font-size: 18px;
+    /* Tăng kích thước chữ */
+    border-radius: 8px;
+    /* Góc bo tròn */
+    transition: background-color 0.3s ease;
+    /* Hiệu ứng chuyển màu */
+    cursor: pointer;
+    /* Con trỏ chuột thay đổi khi hover */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    /* Thêm hiệu ứng đổ bóng */
+}
+
+button:hover {
+    background-color: #45a049;
+    /* Màu nền khi hover */
+}
+
+h1 {
+    text-align: center;
+    /* Canh giữa theo chiều ngang */
+    font-size: 1000px;
+    color: #333;
+}
+
+
+#detailButton button {
+    padding: 4px 10px;
+    color: white;
+    background-color: #6ebbe8;
+    /* Màu nền xanh dương cho nút chi tiết */
+}
+
+#detailButton button:hover {
+    background-color: #0056b3;
+    /* Màu nền khi hover cho nút chi tiết */
+}
+
+#reviewButton button {
+    padding: 4px 10px;
+    color: white;
+    background-color: #FF9800;
+    /* Màu nền cam cho nút đánh giá */
+}
+
+#reviewButton button:hover {
+    background-color: #e68900;
+    /* Màu nền khi hover cho nút đánh giá */
+}
+
 
 hr {
     margin-top: 10px;

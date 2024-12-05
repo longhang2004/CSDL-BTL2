@@ -1,6 +1,6 @@
 import { getauth, query } from './sql-helper.js';
 
-function isEmpty(input){
+function isEmpty(input) {
     return (typeof input == 'undefined' || input == undefined || input == null || input == "");
 }
 
@@ -100,30 +100,30 @@ export function get_hang_hoa(request, response) {
         query_str += ` AND LOWER(hsx.DiaChi) LIKE '%${request.query.hangsanxuat_diachi}%'`
     }
     // Lọc sao đánh giá
-    if (!isEmpty(request.query.hanghoa_danhgia_min)|| !isEmpty(request.query.hanghoa_danhgia_max)) {
+    if (!isEmpty(request.query.hanghoa_danhgia_min) || !isEmpty(request.query.hanghoa_danhgia_max)) {
         var danhgia_min = !isEmpty(request.query.hanghoa_danhgia_min) ? request.query.hanghoa_danhgia_min : 0;
-        var danhgia_max = !isEmpty(request.query.hanghoa_danhgia_max )? request.query.hanghoa_danhgia_max : 5;
+        var danhgia_max = !isEmpty(request.query.hanghoa_danhgia_max) ? request.query.hanghoa_danhgia_max : 5;
         if (danhgia_min.length !== 0 && danhgia_max.length !== 0)
             query_str += ` AND hh.SoSaoDanhGia BETWEEN ${danhgia_min} AND ${danhgia_max}`;
     }
     // Lọc giá mua vào
-    if (!isEmpty(request.query.hanghoa_giamua_min)|| !isEmpty(request.query.hanghoa_giamua_max)) {
+    if (!isEmpty(request.query.hanghoa_giamua_min) || !isEmpty(request.query.hanghoa_giamua_max)) {
         var giamua_min = !isEmpty(request.query.hanghoa_giamua_min) ? request.query.hanghoa_giamua_min : 0;
         var giamua_max = !isEmpty(request.query.hanghoa_giamua_max) ? request.query.hanghoa_giamua_max : 999999999;
         if (giamua_min.length !== 0 && giamua_max.length !== 0)
             query_str += ` AND hh.GiaMuaVao BETWEEN ${giamua_min} AND ${giamua_max}`;
     }
     // Lọc giá bán ra
-    if (!isEmpty(request.query.hanghoa_giaban_min)|| !isEmpty(request.query.hanghoa_giaban_max)) {
-        var giaban_min = !isEmpty(request.query.hanghoa_giaban_min)? request.query.hanghoa_giaban_min : 0;
-        var giaban_max = !isEmpty(request.query.hanghoa_giaban_max)? request.query.hanghoa_giaban_max : 999999999;
+    if (!isEmpty(request.query.hanghoa_giaban_min) || !isEmpty(request.query.hanghoa_giaban_max)) {
+        var giaban_min = !isEmpty(request.query.hanghoa_giaban_min) ? request.query.hanghoa_giaban_min : 0;
+        var giaban_max = !isEmpty(request.query.hanghoa_giaban_max) ? request.query.hanghoa_giaban_max : 999999999;
         if (giaban_min.length !== 0 && giaban_max.length !== 0)
             query_str += ` AND hh.GiaBanNiemYet BETWEEN ${giaban_min} AND ${giaban_max}`;
     }
     // Lọc tồn kho
-    if (!isEmpty(request.query.hanghoa_tonkho_min)|| !isEmpty(request.query.hanghoa_tonkho_max)) {
-        var tonkho_min = !isEmpty(request.query.hanghoa_tonkho_min)? request.query.hanghoa_tonkho_min : 0;
-        var tonkho_max = !isEmpty(request.query.hanghoa_tonkho_max)? request.query.hanghoa_tonkho_max : 999999999;
+    if (!isEmpty(request.query.hanghoa_tonkho_min) || !isEmpty(request.query.hanghoa_tonkho_max)) {
+        var tonkho_min = !isEmpty(request.query.hanghoa_tonkho_min) ? request.query.hanghoa_tonkho_min : 0;
+        var tonkho_max = !isEmpty(request.query.hanghoa_tonkho_max) ? request.query.hanghoa_tonkho_max : 999999999;
         if (tonkho_min.length !== 0 && tonkho_max.length !== 0)
             query_str += ` AND hh.TonKho BETWEEN ${tonkho_min} AND ${tonkho_max}`;
     }
@@ -292,7 +292,7 @@ export function create_danh_gia(request, response) {
     });
 }
 
-export function get_danh_gia(request, response){
+export function get_danh_gia(request, response) {
     var auth = getauth(request.headers)
     var query_str = `SELECT dg.*,kh.CapBac,nd.* FROM DanhGiaSanPham AS dg
         JOIN HangHoa AS hh ON dg.MaHangHoa = hh.MaHangHoa
@@ -315,7 +315,7 @@ export function get_danh_gia(request, response){
 }
 
 
-function create_user(request, response) {
+export function create_user(request, response) {
     var auth = getauth(request.headers)
     const { Ten, Ho, email, sdt, diaChi, LoaiNguoiDung, matkhau } = request.body;
 
@@ -366,7 +366,7 @@ export function read_user(request, response) {
     });
 }
 
-function update_user(request, response) {
+export function update_user(request, response) {
     var auth = getauth(request.headers)
     const { MaNguoiDung } = request.params;
     const { Ten, Ho, email, sdt, diaChi, LoaiNguoiDung, matkhau } = request.body;
@@ -395,7 +395,7 @@ function update_user(request, response) {
     });
 }
 
-function delete_user(request, response) {
+export function delete_user(request, response) {
     var auth = getauth(request.headers)
     const { MaNguoiDung } = request.params;
 
@@ -445,6 +445,88 @@ function delete_user(request, response) {
                 success: true,
                 message: "Xóa người dùng và dữ liệu liên quan thành công"
             });
+        }
+    });
+}
+
+export function get_product_detail(request, response) {
+    var auth = getauth(request.headers);
+    const maHangHoa = request.params.maHangHoa;
+
+    // Query cơ bản lấy thông tin hàng hóa và hãng sản xuất
+    const query_str = `
+        -- Lấy thông tin cơ bản của hàng hóa và hãng sản xuất
+        SELECT 
+            hh.*,
+            hsx.TenHangSanXuat,
+            hsx.DiaChi as DiaChiHangSanXuat,
+            -- Lấy thông tin chi tiết dựa vào loại hàng hóa
+            CASE 
+                WHEN hh.LoaiHangHoa = N'DienThoai' THEN (
+                    SELECT TOP 1 * FROM DienThoai WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Laptop' THEN (
+                    SELECT TOP 1 * FROM Laptop WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Tablet' THEN (
+                    SELECT TOP 1 * FROM Tablet WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+                WHEN hh.LoaiHangHoa = N'Smartwatch' THEN (
+                    SELECT TOP 1 * FROM Smartwatch WHERE MaHangHoa = hh.MaHangHoa FOR JSON PATH
+                )
+            END as ThongTinChiTiet,
+            -- Lấy đánh giá sản phẩm
+            (
+                SELECT 
+                    dg.MaDanhGia,
+                    dg.NoiDung,
+                    dg.SoSao,
+                    dg.Anh_Video,
+                    dg.MaKhachHang,
+                    nd.Ho + ' ' + nd.Ten as TenNguoiDung,
+                    kh.CapBac,
+                    dg.MaDonHang
+                FROM DanhGiaSanPham dg
+                JOIN NguoiDung nd ON dg.MaKhachHang = nd.MaNguoiDung
+                JOIN KhachHang kh ON dg.MaKhachHang = kh.MaNguoiDung
+                WHERE dg.MaHangHoa = hh.MaHangHoa
+                FOR JSON PATH
+            ) as DanhGia
+        FROM HangHoa hh
+        JOIN HangSanXuat hsx ON hh.MaHangSanXuat = hsx.MaHangSanXuat
+        WHERE hh.MaHangHoa = ${maHangHoa}
+    `;
+
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        } else {
+            if (rows.recordset.length > 0) {
+                const product = rows.recordset[0];
+
+                // Parse JSON strings
+                try {
+                    if (product.ThongTinChiTiet) {
+                        product.ThongTinChiTiet = JSON.parse(product.ThongTinChiTiet);
+                    }
+                    if (product.DanhGia) {
+                        product.DanhGia = JSON.parse(product.DanhGia);
+                    }
+                } catch (e) {
+                    console.error("JSON parse error:", e);
+                }
+
+                response.json({
+                    success: true,
+                    message: "Lấy thông tin sản phẩm thành công",
+                    data: product
+                });
+            } else {
+                response.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy sản phẩm"
+                });
+            }
         }
     });
 }
