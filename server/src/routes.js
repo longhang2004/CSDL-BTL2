@@ -145,8 +145,6 @@ export function get_hang_hoa(request, response) {
             query_str += ` ORDER BY ${sort_by} ${sort_dir}`;
     }
 
-    console.log("QUERY : " + query_str);
-
     query(query_str, auth, (error, rows) => {
         if (error) {
             deal_with_error(query_str, response, error);
@@ -165,32 +163,43 @@ export const create_chi_tiet_hang_hoa = (request, response) => {
     var auth = getauth(request.headers)
     var body = request.body;
 
-    const insert_hanghoa = () => {
-        var query_str = `INSERT INTO HangHoa(MaHangSanXuat, Ten, TonKho, GiaMuaVao, GiaBanNiemYet, LoaiHangHoa, MoTa) VALUES (${body.MaHangSanXuat}, '${body.Ten}', ${body.TonKho}, ${body.GiaMuaVao}, ${body.GiaBanNiemYet},'${body.LoaiHangHoa}', '${body.MoTa}');
-            SELECT SCOPE_IDENTITY() as MaHangHoa;`;
-        query(query_str, auth, (error, rows) => {
-            if (error) {
-                deal_with_error(query_str, response, error);
-            }
-            else
-                response.json({
-                    success: true,
-                    message: "Thêm dữ liệu thành công",
-                    query: query_str,
-                    data: rows.recordset
-                });
-        });
+    if (body.LoaiHangHoa =='DienThoai'){
+        var query_str = `INSERT INTO DienThoai(MaHangHoa, ViXuLy, ManHinh, RAM_ROM, Camera, PinSac, ChuanKetNoi) VALUES (${body.MaHangHoa}, '${body.ViXuLy}', '${body.ManHinh}', '${body.RAM_ROM}', '${body.Camera}', '${body.PinSac}', '${body.ChuanKetNoi}');`;
     }
+    else if (body.LoaiHangHoa =='Laptop'){
+        var query_str = `INSERT INTO Laptop(MaHangHoa, ManHinh, ViXuLy, RAM_ROM, CardDoHoa, Pin, TrongLuong, HeDieuHanh) VALUES (${body.MaHangHoa}, '${body.ManHinh}', '${body.ViXuLy}', '${body.RAM_ROM}', '${body.CardDoHoa}', '${body.Pin}', '${body.TrongLuong}', '${body.HeDieuHanh}');`;
+    }
+    else if (body.LoaiHangHoa =='Tablet'){
+        var query_str = `INSERT INTO Tablet(MaHangHoa, ViXuLy, ManHinh, RAM_ROM, Camera, Pin, KetNoi, HoTroBut) VALUES (${body.MaHangHoa}, '${body.ViXuLy}', '${body.ManHinh}', '${body.RAM_ROM}', '${body.Camera}', '${body.Pin}', '${body.KetNoi}', '${body.HoTroBut}');`;
+    }
+    else if (body.LoaiHangHoa == 'Smartwatch') {
+        var query_str = `INSERT INTO Smartwatch(MaHangHoa, ManHinh, DuongKinhMatDongHo, ChatLieuDay, ThoiLuongPin, TinhNangSucKhoe, ChongNuoc, KetNoi) VALUES (${body.MaHangHoa}, '${body.ManHinh}', '${body.DuongKinhMatDongHo}', '${body.ChatLieuDay}', '${body.ThoiLuongPin}', '${body.TinhNangSucKhoe}', '${body.ChongNuoc}', '${body.KetNoi}');`;
+    }
+    else response.json({
+        success: true,
+        message: "Lấy dữ liệu thành công",
+    });
 
-    insert_hanghoa();
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.json({
+                success: true,
+                message: "Lấy dữ liệu thành công",
+                query: query_str,
+                data: rows.recordset
+            });
+    });
 }
 
 export const get_chi_tiet_hang_hoa = (request, response) => {
     var auth = getauth(request.headers);
-    var query_str;
     // if (request.query.MaHangHoa == 'PhuKien') query_str = `SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi', loai.* FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat WHERE hh.MaHangHoa = ${request.query.MaHangHoa}`;
     // else query_str = `SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat INNER JOIN ${request.query.LoaiHangHoa} as loai ON hh.MaHangHoa = loai.MaHangHoa WHERE hh.MaHangHoa = ${request.query.MaHangHoa}`;
-    query_str = `SELECT ct.* FROM ${request.query.LoaiHangHoa} as loai WHERE ct.MaHangHoa = ${request.query.MaHangHoa}`
+    var query_str = `SELECT ct.* FROM ${request.query.LoaiHangHoa} as ct WHERE ct.MaHangHoa = ${request.query.MaHangHoa}`
+    // console.log("QUERY : " + query_str);
     query(query_str, auth, (error, rows) => {
         if (error) {
             deal_with_error(query_str, response, error);
@@ -336,8 +345,10 @@ export function get_average_rating(request, response) {
     var auth = getauth(request.headers)
 
     const MaHangHoa = request.body.MaHangHoa;
-    const query_str = `UPDATE HangHoa SET SoSaoDanhGia=dbo.GetAverageRatingForProduct(HangHoa.MaHangHoa) WHERE MaHangHoa = ${MaHangHoa}; SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat WHERE hh.MaHangHoa = ${MaHangHoa};`;
+    const query_str = `UPDATE HangHoa SET SoSaoDanhGia=dbo.GetAverageRatingForProduct(HangHoa.MaHangHoa) WHERE MaHangHoa = ${MaHangHoa}; SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat WHERE hh.MaHangHoa = ${MaHangHoa};
+    UPDATE HangHoa SET SoSaoDanhGia = 0 Where SoSaoDanhGia IS NULL;`;
 
+    console.log("QUERY : " + query_str);
     query(query_str, auth, (error, rows) => {
         if (error) {
             deal_with_error(query_str, response, error);
@@ -525,5 +536,24 @@ function delete_user(request, response) {
                 message: "Xóa người dùng và dữ liệu liên quan thành công"
             });
         }
+    });
+}
+
+export const get_don_hang = (request, response) => {
+    var auth = getauth(request.headers)
+    var query_str = `SELECT dh.*, kh.Ten as 'kh.Ten', kh.Ho as 'kh.Ho', kh.Email as 'kh.Email', kh.Sdt as 'kh.Sdt', kh.DiaChi as 'kh.DiaChi' FROM DonHang as dh INNER JOIN NguoiDung as kh ON kh.MaNguoiDung = dh.MaKhachHang`;
+    if (!isEmpty(request.query.MaDonHang))
+        query_str += ` WHERE dh.MaDonHang = ${request.query.MaDonHang}`;
+    query(query_str, auth, (error, rows) => {
+        if (error) {
+            deal_with_error(query_str, response, error);
+        }
+        else
+            response.json({
+                success: true,
+                message: "Lấy dữ liệu thành công",
+                query: query_str,
+                data: rows.recordset
+            });
     });
 }

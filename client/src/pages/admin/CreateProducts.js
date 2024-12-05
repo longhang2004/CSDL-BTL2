@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { apiCreateProduct, apiGetManufacturers } from '../../apis/product';
+import { apiCreateProduct, apiGetManufacturers, apiCreateProductDetail } from '../../apis/product';
 import Swal from 'sweetalert2';
 
 const CreatProduct = () => {
     const [productType, setProductType] = useState('');
     const [productData, setProductData] = useState({});
+    const [detailProductData, setDetailProductData] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [manufacturers, setManufacturers] = useState([]);
@@ -89,6 +90,14 @@ const CreatProduct = () => {
         }));
     };
 
+    const handleInputDetailChange = (e) => {
+        const { name, value } = e.target;
+        setDetailProductData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     const handleNewManufacturerChange = (e) => {
         const { name, value } = e.target;
         setProductData(prev => ({
@@ -101,8 +110,6 @@ const CreatProduct = () => {
         e.preventDefault();
         try {
             setIsSubmitting(true);
-
-            console.log(productData)
             
             // Format the data according to your API requirements
             const payload = {
@@ -120,6 +127,22 @@ const CreatProduct = () => {
             const response = await apiCreateProduct(payload);
 
             if (response.success === true) {
+                // Create product detail
+
+                const detailPayload = {
+                    ...detailProductData,
+                    MaHangHoa: response.data[0].MaHangHoa,
+                    LoaiHangHoa: productType
+                };
+    
+                const detailResponse = await apiCreateProductDetail(detailPayload);
+                if (!detailResponse.success) {
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi thêm chi tiết sản phẩm',
+                        icon: 'error'
+                      });
+                }
               Swal.fire({
                 title: 'Thành công',
                 text: 'Thêm sản phẩm thành công',
@@ -128,6 +151,7 @@ const CreatProduct = () => {
                 // Reset form
               setProductType('');
               setProductData({});
+                setDetailProductData({});
             }
             else {
               Swal.fire({
@@ -136,8 +160,6 @@ const CreatProduct = () => {
                 icon: 'error'
               });
             }
-            console.log(response)
-            console.log(payload)
         } catch (error) {
             Swal.fire({
                 title: 'Lỗi',
@@ -167,7 +189,11 @@ const CreatProduct = () => {
                     </label>
                     <select
                         value={productType}
-                        onChange={(e) => setProductType(e.target.value)}
+                        onChange={(e) => {
+                            setProductType(e.target.value);
+                            setProductData({});
+                            setDetailProductData({});
+                        }}
                         className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                         <option value="">Vui lòng chọn loại sản phẩm</option>
@@ -287,8 +313,8 @@ const CreatProduct = () => {
                                             id={attr.name}
                                             name={attr.name}
                                             type="text"
-                                            onChange={handleInputChange}
-                                            value={productData[attr.name] || ''}
+                                            onChange={handleInputDetailChange}
+                                            value={detailProductData[attr.name] || ''}
                                             className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         />
                                     </div>

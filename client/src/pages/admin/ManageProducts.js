@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiGetProducts, apiDeleteProduct, apiGetProductByFilter } from '../../apis'
 import Swal from 'sweetalert2';
 import UpdateProduct from './UpdateProduct'
+import ProductDetails from './ProductDetails';
 
 const ManageProduct = () => {
     const [products, setProducts] = useState([]);
@@ -88,14 +89,12 @@ const ManageProduct = () => {
             ...prev,
             [name]: value
         }));
-        console.log(filterTerm);
     };
 
     const handleFilter = async () => {
         
         if (isFiltering&&filterTerm) {
             setLoading(true);
-            console.log(filterTerm);
             const response = await apiGetProductByFilter({
                 ...filterTerm,
                 sort_by:sortField,
@@ -104,7 +103,6 @@ const ManageProduct = () => {
             });
             if (response.success) {
                 setProducts(response.data);
-                console.log(response.query)
             }
             setLoading(false);
         } else {
@@ -176,7 +174,7 @@ const ManageProduct = () => {
     return (
         <div className="w-main flex relative flex-col py-10 container mx-auto p-6">
             {viewProduct && <div className='absolute inset-0 min-h-screen bg-white'>
-                Xem chi tiết
+                <ProductDetails MaHangHoa={viewProduct} setViewProduct={setViewProduct} />
                 </div>
             }
 
@@ -335,7 +333,7 @@ const ManageProduct = () => {
                             <th className="px-6 py-3 text-center">Giá mua vào</th>
                             <th className="px-6 py-3 text-center">Giá bán niêm yết</th>
                             <th className="px-6 py-3 text-center">Tồn kho</th>
-                            <th className="px-6 py-3 text-center">Đánh giá</th>
+                            <th className="px-6 py-3 text-center">Loại sản phẩm</th>
                             <th className="px-6 py-3 text-center">Hãng sản xuất</th>
                             <th className="px-6 py-3 text-center">Xem chi tiết</th>
                             <th className="px-6 py-3 text-center">Thao tác</th>
@@ -382,7 +380,7 @@ const ManageProduct = () => {
                                         }).format(product.GiaBanNiemYet)}
                                     </td>
                                     <td className="px-6 py-4 text-center">{product.TonKho}</td>
-                                    <td className="px-6 py-4 text-center">{product.SoSaoDanhGia}</td>
+                                    <td className="px-6 py-4 text-center">{product.LoaiHangHoa}</td>
                                     {/* <td className="px-6 py-4 text-center whitespace-nowrap">
                                         {new Date(product.updatedAt).toLocaleDateString('vi-VN')}
                                     </td> */}

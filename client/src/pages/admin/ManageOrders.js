@@ -27,6 +27,7 @@ const ManageOrders = () => {
     const fetchOrders = async () => {
         setLoading(true);
         const response = await apiGetOrders();
+        console.log(response);
 
         if (response.success) {
             setOrders(response.data);
@@ -68,11 +69,11 @@ const ManageOrders = () => {
     // };
     
     
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
+    // const handleKeyDown = (e) => {
+    //     if (e.key === 'Enter') {
+    //         handleSearch();
+    //     }
+    // };
 
     return (
         <div className="w-main flex relative flex-col py-10 container mx-auto p-6">
@@ -93,11 +94,13 @@ const ManageOrders = () => {
                 <table className="min-w-full table-auto">
                     <thead>
                         <tr className="bg-sky-800 text-white">
-                            <th className="px-4 py-3 text-left">Mã đơn hàng</th>
+                            <th className="px-4 py-3 text-center">Mã đơn hàng</th>
                             {/* <th className="px-4 py-3 text-left">Khách hàng</th> */}
-                            <th className="px-6 py-3 text-right">Tổng tiền</th>
+                            <th className="px-6 py-3 text-center">Tên khách hàng</th>
+                            <th className="px-6 py-3 text-center">Tổng tiền</th>
                             <th className="px-6 py-3 text-center">Trạng thái</th>
                             <th className="px-6 py-3 text-center">Phương thức thanh toán</th>
+                            <th className="px-6 py-3 text-center">Trạng thái thanh toán</th>
                             <th className="px-6 py-3 text-center">Ngày đặt</th>
                         </tr>
                     </thead>
@@ -117,20 +120,23 @@ const ManageOrders = () => {
                         ) : (
                             orders.map((order) => (
                                 <tr key={order._id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-4 font-medium">
+                                    <td className="px-4 py-4 font-medium text-center">
                                         {order.MaDonHang}
                                     </td>
                                     {/* <td className="px-4 py-4">
                                         <div>{order.name}</div>
                                         <div className="text-sm text-gray-500">{order.email}</div>
                                     </td> */}
-                                    <td className="px-6 py-4 text-right font-medium">
+                                    <td className="px-6 py-4 text-center font-medium">
+                                        {order['kh.Ho'] + ' ' + order['kh.Ten']}
+                                    </td>
+                                    <td className="px-6 py-4 text-center font-medium">
                                             {new Intl.NumberFormat('vi-VN', {
                                                 style: 'currency',
                                                 currency: 'VND'
                                             }).format(order.TongGiaTriDonHang)}
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-medium">
+                                    <td className="px-6 py-4 text-center font-medium">
                                         {/* <select
                                             value={order.status}
                                             onChange={e => handleStatusChange(order._id, e.target.value)}
@@ -149,11 +155,14 @@ const ManageOrders = () => {
                                         {order.TrangThaiDonHang}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-medium">
+                                        <div className="font-medium text-center">
                                             <span>
                                                 {order.HinhThucThanhToan}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        {order.TrangThaiThanhToan}
                                     </td>
                                     <td className="px-6 py-4 text-center whitespace-nowrap">
                                         {new Date(order.ThoiGianDatHang).toLocaleDateString('vi-VN')}

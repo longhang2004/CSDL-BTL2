@@ -5,3 +5,9 @@ export const apiGetRatings = (data) => axios({
     method: 'get',
     params: data
 });
+
+export const apiGetAverageRating = (data) => axios({
+    url: '/get-average-rating',
+    method: 'post',
+    data
+});

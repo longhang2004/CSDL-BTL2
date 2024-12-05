@@ -83,7 +83,6 @@ const UpdateProduct = ({ MaHangHoa, setEditProduct }) => {
       setLoading(true);
       const response = await apiGetProductByFilter({hanghoa_id: MaHangHoa});
       
-      
       if (response.success) {
           const product = response.data[0];
           setProductType(product.LoaiHangHoa);
@@ -161,6 +160,16 @@ const UpdateProduct = ({ MaHangHoa, setEditProduct }) => {
             };
 
             const response = await apiUpdateProduct(updateData);
+
+            Object.keys(productDetail).forEach(async (key) => {
+                const updateDetailData = {
+                    LoaiHangHoa: productType,
+                    MaHangHoa: MaHangHoa,
+                    TenCot: key,
+                    GiaTriMoi: productDetail[key]
+                };
+                await apiUpdateProductDetail(updateDetailData);
+            });
 
             if (response.success) {
                 Swal.fire({
