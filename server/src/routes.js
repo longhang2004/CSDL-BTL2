@@ -348,7 +348,6 @@ export function get_average_rating(request, response) {
     const query_str = `UPDATE HangHoa SET SoSaoDanhGia=dbo.GetAverageRatingForProduct(HangHoa.MaHangHoa) WHERE MaHangHoa = ${MaHangHoa}; SELECT hh.*, hsx.TenHangSanXuat as 'hsx.TenHangSanXuat', hsx.DiaChi as 'hsx.DiaChi' FROM HangHoa as hh INNER JOIN HangSanXuat as hsx ON hsx.MaHangSanXuat = hh.MaHangSanXuat WHERE hh.MaHangHoa = ${MaHangHoa};
     UPDATE HangHoa SET SoSaoDanhGia = 0 Where SoSaoDanhGia IS NULL;`;
 
-    console.log("QUERY : " + query_str);
     query(query_str, auth, (error, rows) => {
         if (error) {
             deal_with_error(query_str, response, error);
