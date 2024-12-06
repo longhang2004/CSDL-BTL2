@@ -250,7 +250,7 @@ const UpdateProduct = ({ MaHangHoa, setEditProduct }) => {
                             }}
                             className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">Vui lòng chọn nhà sản xuất</option>
+                            <option value="" selected disabled>Vui lòng chọn nhà sản xuất</option>
                             <option value="0">Thêm nhà sản xuất mới</option>
                             {manufacturers.map((manufacturer) => (
                                 <option key={manufacturer.MaHangSanXuat} value={manufacturer.MaHangSanXuat}>

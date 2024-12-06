@@ -175,10 +175,13 @@ export const create_chi_tiet_hang_hoa = (request, response) => {
     else if (body.LoaiHangHoa == 'Smartwatch') {
         var query_str = `INSERT INTO Smartwatch(MaHangHoa, ManHinh, DuongKinhMatDongHo, ChatLieuDay, ThoiLuongPin, TinhNangSucKhoe, ChongNuoc, KetNoi) VALUES (${body.MaHangHoa}, '${body.ManHinh}', '${body.DuongKinhMatDongHo}', '${body.ChatLieuDay}', '${body.ThoiLuongPin}', '${body.TinhNangSucKhoe}', '${body.ChongNuoc}', '${body.KetNoi}');`;
     }
-    else response.json({
-        success: true,
-        message: "Lấy dữ liệu thành công",
-    });
+    else {
+            response.json({
+            success: true,
+            message: "Lấy dữ liệu thành công",
+            });
+            return;
+        }
 
     query(query_str, auth, (error, rows) => {
         if (error) {

@@ -110,6 +110,22 @@ const CreatProduct = () => {
         e.preventDefault();
         try {
             setIsSubmitting(true);
+            if (productType === '') {
+                Swal.fire({
+                    title: 'Lỗi',
+                    text: 'Vui lòng chọn loại sản phẩm',
+                    icon: 'error'
+                });
+                return;
+            }
+            if (productData.MaHangSanXuat === '') {
+                Swal.fire({
+                    title: 'Lỗi',
+                    text: 'Vui lòng chọn nhà sản xuất',
+                    icon: 'error'
+                });
+                return;
+            }
             
             // Format the data according to your API requirements
             const payload = {
@@ -129,7 +145,7 @@ const CreatProduct = () => {
             if (response.success === true) {
                 // Create product detail
 
-                const detailPayload = {
+                if (productType!='PhuKien'){const detailPayload = {
                     ...detailProductData,
                     MaHangHoa: response.data[0].MaHangHoa,
                     LoaiHangHoa: productType
@@ -142,7 +158,7 @@ const CreatProduct = () => {
                         text: 'Có lỗi xảy ra khi thêm chi tiết sản phẩm',
                         icon: 'error'
                       });
-                }
+                }}
               Swal.fire({
                 title: 'Thành công',
                 text: 'Thêm sản phẩm thành công',
@@ -196,7 +212,7 @@ const CreatProduct = () => {
                         }}
                         className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                        <option value="">Vui lòng chọn loại sản phẩm</option>
+                        <option value="" selected disabled>Vui lòng chọn loại sản phẩm</option>
                         {Object.keys(specificAttributes).map((type) => (
                             <option key={type} value={type}>
                                 {type}
@@ -214,12 +230,12 @@ const CreatProduct = () => {
                                 className="block text-sm font-semibold font-medium text-gray-700"
                             >
                                 {attr.label}
-                                {attr.required && <span className="text-red-500">*</span>}
+                                {<span className="text-red-500">*</span>}
                             </label>
                             <input
                                 id={attr.name}
                                 name={attr.name}
-                                required={attr.required}
+                                required={true}
                                 onChange={handleInputChange}
                                 value={productData[attr.name] || ''}
                                 className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -244,7 +260,7 @@ const CreatProduct = () => {
                             }}
                             className="w-full px-3 py-2 border border-sky-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                            <option value="">Vui lòng chọn nhà sản xuất</option>
+                            <option value="" selected disabled>Vui lòng chọn nhà sản xuất</option>
                             <option value="0">Thêm nhà sản xuất mới</option>
                             {manufacturers.map((manufacturer) => (
                                 <option key={manufacturer.MaHangSanXuat} value={manufacturer.MaHangSanXuat}>
@@ -308,10 +324,12 @@ const CreatProduct = () => {
                                             className="block text-sm font-medium text-gray-700"
                                         >
                                             {attr.label}
+                                {<span className="text-red-500">*</span>}
                                         </label>
                                         <input
                                             id={attr.name}
                                             name={attr.name}
+                                            required={true}
                                             type="text"
                                             onChange={handleInputDetailChange}
                                             value={detailProductData[attr.name] || ''}

@@ -222,11 +222,12 @@ const ProductDetails = ({ MaHangHoa, setViewProduct }) => {
                         <p><strong>Tồn kho:</strong> {formData.TonKho} </p>
                         <p><strong>Loại hàng hóa:</strong> {formData.LoaiHangHoa} </p>
                         <p><strong>Mã hãng sản xuất:</strong> {formData.MaHangSanXuat}</p>
+                        <p><strong>Hãng sản xuất:</strong> {formData["hsx.TenHangSanXuat"]}</p>
+                        <p><strong>Địa chỉ:</strong> {formData["hsx.DiaChi"]}</p>
 
                         {/* Product detail */}
                         {productType && specificAttributes[productType] && (
                             < div >
-                                <h3>Thông số kỹ thuật</h3>
                                 {specificAttributes[productType].map((attribute) => (
                                     <p key={attribute.name}><strong>{attribute.label}:</strong> {productDetail[attribute.name]}</p>
                                 ))}
@@ -260,7 +261,6 @@ const ProductDetails = ({ MaHangHoa, setViewProduct }) => {
                         {/* Display reviews if the toggle is true */}
                         {showReviews && (
                             <div className="reviews">
-                                <h3>Đánh giá sản phẩm</h3>
                                 {reviews.filter(review => review.MaHangHoa === formData.MaHangHoa).map((review) => (
                                     <div key={review.MaDanhGia} className="review-item">
                                         <p><strong>Người đánh giá:</strong> {review.Ho} {review.Ten} ({review.CapBac})</p>
