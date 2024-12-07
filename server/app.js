@@ -4,7 +4,7 @@ import {read_user, login, get_hang_hoa, create_hang_hoa, update_hang_hoa, delete
 
 const app = express();
 app.use(express.json());       // to support JSON-encoded bodies
-app.use(express.urlencoded()); // to support URL-encoded bodies
+app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
 const corsOptions ={
     origin:'*', 
     credentials:true,            //access-control-allow-credentials:true
