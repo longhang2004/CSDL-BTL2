@@ -30,13 +30,13 @@ VALUES
     ('Vivo', 'Dongguan, China');
 
 -- Insert dữ liệu vào bảng HangHoa
-INSERT INTO HangHoa (MaHangSanXuat, Ten, GiaMuaVao, GiaBanNiemYet, MoTa)
+INSERT INTO HangHoa (MaHangSanXuat, Ten, GiaMuaVao, GiaBanNiemYet, TonKho, MoTa, SoSaoDanhGia, LoaiHangHoa)
 VALUES 
-    (1, 'iPhone 14 Pro Max', 25000000, 29990000, N'iPhone 14 Pro Max - Flagship mới nhất từ Apple'),
-    (2, 'Samsung Galaxy S23 Ultra', 23000000, 26990000, N'Samsung Galaxy S23 Ultra với bút S-Pen'),
-    (1, 'iPhone 13', 15000000, 17990000, N'iPhone 13 - Hiệu năng ổn định'),
-    (3, 'Xiaomi 13 Pro', 18000000, 21990000, N'Xiaomi 13 Pro - Camera Leica'),
-    (4, 'OPPO Find X5 Pro', 19000000, 22990000, N'OPPO Find X5 Pro - Thiết kế độc đáo');
+    (1, 'iPhone 14 Pro Max', 25000000, 29990000, 50, N'iPhone 14 Pro Max - Flagship mới nhất từ Apple', 4.8, N'DienThoai'),
+    (2, 'Samsung Galaxy S23 Ultra', 23000000, 26990000, 45, N'Samsung Galaxy S23 Ultra với bút S-Pen', 4.7, N'DienThoai'),
+    (1, 'iPhone 13', 15000000, 17990000, 30, N'iPhone 13 - Hiệu năng ổn định', 4.6, N'DienThoai'),
+    (3, 'Xiaomi 13 Pro', 18000000, 21990000, 40, N'Xiaomi 13 Pro - Camera Leica', 4.5, N'DienThoai'),
+    (4, 'OPPO Find X5 Pro', 19000000, 22990000, 35, N'OPPO Find X5 Pro - Thiết kế độc đáo', 4.4, N'DienThoai');
 
 -- Insert dữ liệu vào bảng DienThoai
 INSERT INTO DienThoai (MaHangHoa, ViXuLy, ManHinh, RAM_ROM, Camera, PinSac, ChuanKetNoi)
@@ -73,9 +73,9 @@ VALUES
 -- Insert dữ liệu vào bảng ChiTietDonHang
 INSERT INTO ChiTietDonHang (MaDonHang, MaHangHoa, SoLuong)
 VALUES 
-    (1, 1, 1),
-    (2, 2, 1),
-    (3, 3, 1);
+    ('DH00001', 1, 1),
+    ('DH00002', 2, 1),
+    ('DH00003', 3, 1);
 
 -- Insert dữ liệu vào bảng GioHang
 INSERT INTO GioHang (MaNguoiDung, MaHangHoa, SoLuong)
@@ -87,9 +87,9 @@ VALUES
 -- Insert dữ liệu vào bảng DanhGiaSanPham
 INSERT INTO DanhGiaSanPham (MaDonHang, MaKhachHang, MaHangHoa, NoiDung, SoSao)
 VALUES 
-    (2, 4, 2, N'Sản phẩm rất tốt, đóng gói cẩn thận', 5),
-    (1, 3, 1, N'Chất lượng sản phẩm tuyệt vời', 5),
-    (3, 5, 3, N'Giao hàng nhanh, sản phẩm đúng mô tả', 4);
+    ('DH00002', 4, 2, N'Sản phẩm rất tốt, đóng gói cẩn thận', 5),
+    ('DH00001', 3, 1, N'Chất lượng sản phẩm tuyệt vời', 5),
+    ('DH00003', 5, 3, N'Giao hàng nhanh, sản phẩm đúng mô tả', 4);
 
 -- Insert dữ liệu vào bảng TinNhan
 INSERT INTO TinNhan (MaAdmin, MaKhachHang, NoiDung)
@@ -101,9 +101,9 @@ VALUES
 -- Insert dữ liệu vào bảng SuDungVoucher
 INSERT INTO SuDungVoucher (MaDonHang, MaVoucher)
 VALUES 
-    (1, 1),
-    (2, 2),
-    (3, 3);
+    ('DH00001', 1),
+    ('DH00002', 2),
+    ('DH00003', 3);
 
 -- Insert dữ liệu vào bảng LichSuThayDoi
 INSERT INTO LichSuThayDoi (MaHangHoa, MaNguoiDung, Ten, MoTaCu, MoTaMoi, GiaCu, GiaMoi)
